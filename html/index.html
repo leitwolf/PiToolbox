@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <title>PiToolbox</title>
+    <link href="fav.ico" rel="shortcut icon" type="image/ico" />
+    <script src="lib/jquery-1.10.0.min.js"></script>
+    <link href="lib/zui/css/zui.css" rel="stylesheet">
+    <script src="lib/zui/js/zui.js"></script>
+    <link href="lib/icheck/skins/square/blue.css" rel="stylesheet">
+    <script src="lib/icheck/icheck.min.js"></script>
+    <link href="css/style.css" rel="stylesheet">
+    <script src="js/c/checkjar.js"></script>
+    <script src="js/c/c.js"></script>
+    <script src="js/c/fileinfo.js"></script>
+    <script src="js/c/account.js"></script>
+    <script src="js/c/am.js"></script>
+    <script src="js/theme.js"></script>
+    <script src="js/global.js"></script>
+    <script src="js/module/sidebar.js"></script>
+    <script src="js/module/net.js"></script>
+    <script src="js/module/page.js"></script>
+    <script src="js/module/aria2.js"></script>
+    <script src="js/module/xunlei.js"></script>
+    <script src="js/main.js"></script>
+    <script>
+        $(document).ready(function(){
+            init();
+        });
+    </script>
+</head>
+
+<body>
+    <nav class="navbar navbar-inverse navbar-fixed-top">
+        <div>
+            <div class="navbar-header">
+                <span class="navbar-brand">&nbsp;&nbsp;PiToolbox</span>
+            </div>
+            <div id="navbar" class="navbar-collapse collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <div class="theme-tile" data-toggle="tooltip" data-placement="bottom" title="default" data-theme="default" style="color: rgb(235, 242, 249); border-radius: 4px; background-color: rgb(50, 128, 252);">
+                            <i class="icon icon-ok" style="background-color: rgb(20, 92, 205);"></i>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="theme-tile" data-toggle="tooltip" data-placement="bottom" title="blue" data-theme="blue" style="color: rgb(225, 245, 254); border-radius: 4px; background-color: rgb(3, 155, 229);">
+                            <i class="icon icon-ok" style="background-color: rgb(2, 136, 209);"></i>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="theme-tile" data-toggle="tooltip" data-placement="bottom" title="red" data-theme="red" style="color: rgb(255, 235, 238); border-radius: 4px; background-color: rgb(217, 83, 79);">
+                            <i class="icon icon-ok" style="background-color: rgb(199, 71, 67);"></i>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="theme-tile" data-toggle="tooltip" data-placement="bottom" title="green" data-theme="green" style="color: rgb(232, 245, 233); border-radius: 0px; background-color: rgb(76, 175, 80);">
+                            <i class="icon icon-ok" style="background-color: rgb(67, 160, 71);"></i>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="theme-tile" data-toggle="tooltip" data-placement="bottom" title="purple" data-theme="purple" style="color: rgb(245, 238, 255); border-radius: 0px; background-color: rgb(134, 102, 184);">
+                            <i class="icon icon-ok" style="background-color: rgb(103, 58, 183);"></i>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="theme-tile" data-toggle="tooltip" data-placement="bottom" title="brown" data-theme="brown" style="color: rgb(247, 235, 225); border-radius:7px; background-color: rgb(141, 110, 99);">
+                            <i class="icon icon-ok" style="background-color: rgb(121, 85, 72);"></i>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="theme-tile" data-toggle="tooltip" data-placement="bottom" title="yellow" data-theme="yellow" style="color: rgb(255, 240, 213); border-radius: 4px; background-color: rgb(208, 136, 77);">
+                            <i class="icon icon-ok" style="background-color: rgb(189, 123, 70);"></i>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="theme-tile" data-toggle="tooltip" data-placement="bottom" title="indigo" data-theme="indigo" style="color: rgb(236, 239, 241); border-radius: 0px; background-color: rgb(63, 81, 181);">
+                            <i class="icon icon-ok" style="background-color: rgb(57, 73, 171);"></i>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="theme-tile" data-toggle="tooltip" data-placement="bottom" title="bluegrey" data-theme="bluegrey" style="color: rgb(236, 239, 241); border-radius: 0px; background-color: rgb(96, 125, 139);">
+                            <i class="icon icon-ok" style="background-color: rgb(84, 110, 122);"></i>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="theme-tile" data-toggle="tooltip" data-placement="bottom" title="black" data-theme="black" style="color: rgb(245, 245, 245); border-radius: 0px; background-color: rgb(51, 51, 51);">
+                            <i class="icon icon-ok" style="background-color: rgb(34, 34, 34);"></i>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    <div class="col-md-2 sidebar">
+        <nav class="menu" data-toggle="menu">
+            <ul id="sidebar" class="nav nav-primary">
+                <li id="aria2" sidebar-item><a href="javascript:C.getModule('sidebar').loadItem('aria2');"><i class="icon-cloud-download"></i> Aria2</a></li>
+                <li id="xunlei" sidebar-item><a href="javascript:C.getModule('sidebar').loadItem('xunlei');"><i class="icon-bolt"></i> 迅雷离线</a></li>
+                <li id="baidu" sidebar-item><a href="javascript:C.getModule('sidebar').loadItem('baidu');"><i class="icon-bold"></i> 百度云盘</a></li>
+            </ul>
+        </nav>
+    </div>
+    <div id="mainPage" class="col-md-10 col-md-offset-2 main">
+    </div>
+</body>
+
+</html>
