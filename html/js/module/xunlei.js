@@ -61,6 +61,7 @@ var Xunlei = {
         // {id,account,list}
         self.setData = function (data) {
             var id = data["id"];
+            var accountName=data["account"];
             var list = data["list"];
             if (!list || !(list instanceof Array)) {
                 // 返回数据错误
@@ -70,11 +71,15 @@ var Xunlei = {
             if (list.length == 0) {
                 $.zui.messager.show('返回列表数据为空，可能是cookies已过期，请检查！', { type: 'warning', time: 3000 });
             }
-            am.curAccount.setData(id, list);
-            // 把当前文件树设为id
-            am.curAccount.selectFile(id);
-            // 渲染
-            fillHtml();
+            // 有可能数据回来的时候已经切换账户了
+            var account=am.getAccount(accountName);
+            if (account) {
+                account.setData(id, list);
+                // 把当前文件树设为id
+                account.selectFile(id);
+                // 渲染
+                fillHtml();                
+            }
         }
         // 刷新当前页面数据
         self.refresh = function () {

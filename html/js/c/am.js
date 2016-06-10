@@ -13,15 +13,20 @@ var AccountsManager = {
         }
         // 选择账户
         self.selectAccount = function (name) {
+            self.curAccount = self.getAccount(name);
+            if (self.curAccount==null) {
+                console.log("no account name " + name);
+            }            
+        }
+        // 获取指定的账户
+        self.getAccount = function (name) {
             for (var i = 0; i < self.accountList.length; i++) {
                 var account = self.accountList[i];
                 if (account.name == name) {
-                    self.curAccount = account;
-                    return;
+                    return account;
                 }
             }
-            self.curAccount = null;
-            console.log("no account name " + name);
+            return null;
         }
         // 是否是根目录，没有当前账户或没有当前文件树的都算
         self.isRoot = function () {
