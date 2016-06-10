@@ -70,7 +70,7 @@ var Net = {
         // 此计数是用于正在加载，当需要显示时+1，响应之后-1，
         // ==1时显示正在加载，==0则是没有正在加载的了，可以停止显示
         var loadingCount = 0;
-        var loadingMsg = new $.zui.Messager('正在加载。。。', { type: 'info', placement: 'top-right' });
+        var loadingMsg = new $.zui.Messager('正在加载。。。', { type: 'info', placement: 'top-right', time: 0 });
         var addLoading = function (num) {
             loadingCount += num;
             if (num == 1 && loadingCount == 1) {
