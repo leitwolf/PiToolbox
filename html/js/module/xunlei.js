@@ -53,15 +53,26 @@ var Xunlei = {
                 fillHtml();
             }
         }
+        // 进入bt文件夹
+        self.enterFile = function (id) {
+            am.curAccount.selectFile(id);
+            if (am.curAccount.curFile != null && !am.curAccount.curFile.loaded) {
+                // 没有加载过的则加载
+                self.loadData(am.curAccount.curFile.id);
+            }
+            else {
+                fillHtml();
+            }
+        }
         // 加载数据
         self.loadData = function (id) {
-            C.getModule("net").send("xunlei", "loadData", { account: am.curAccount.name, id: id });
+            C.getModule("net").send("xunlei", "loadData", { account: am.curAccount.name, id: id }, true);
         }
         // 设置数据，从服务器获得数据
         // {id,account,list}
         self.setData = function (data) {
             var id = data["id"];
-            var accountName=data["account"];
+            var accountName = data["account"];
             var list = data["list"];
             if (!list || !(list instanceof Array)) {
                 // 返回数据错误
@@ -72,13 +83,16 @@ var Xunlei = {
                 $.zui.messager.show('返回列表数据为空，可能是cookies已过期，请检查！', { type: 'warning', time: 3000 });
             }
             // 有可能数据回来的时候已经切换账户了
-            var account=am.getAccount(accountName);
+            var account = am.getAccount(accountName);
             if (account) {
                 account.setData(id, list);
                 // 把当前文件树设为id
                 account.selectFile(id);
-                // 渲染
-                fillHtml();                
+                // console.log(am.curAccount.curFile);
+                if (account == am.curAccount) {
+                    // 渲染
+                    fillHtml();
+                }
             }
         }
         // 刷新当前页面数据
@@ -189,7 +203,7 @@ var Xunlei = {
                     if (file["url"] == "") {
                         // bt文件夹
                         str += '<td><img src="bt.png" /></td>';
-                        str += '<td><a href="javascript:C.getModule(\'xunlei\').loadData(\'' + file.id + '\');">' + file.title + '</a></td>';
+                        str += '<td><a href="javascript:C.getModule(\'xunlei\').enterFile(\'' + file.id + '\');">' + file.title + '</a></td>';
                     } else {
                         str += '<td><input name="files" type="checkbox" value="' + file.id + '"></td>';
                         str += '<td>' + file.title + '</td>';

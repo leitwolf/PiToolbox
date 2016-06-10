@@ -3,7 +3,7 @@ var Sidebar = {
     createNew: function () {
         var self = {};
         // 当前加载的页面
-        self.curPage=null;
+        self.curPage = null;
         // 加载项，加载页面
         self.loadItem = function (name) {
             var items = $("li[sidebar-item]");
@@ -18,19 +18,19 @@ var Sidebar = {
             }
             // 加入页面
             if (self.curPage) {
-                self.curPage.activated=false;
+                self.curPage.activated = false;
                 self.curPage.toggleActivate();
-                self.curPage=null;
+                self.curPage = null;
             }
-            var page=C.getModule(name);
+            var page = C.getModule(name);
             if (page) {
                 page.mount();
-                page.activated=true;
+                page.activated = true;
                 page.toggleActivate();
-                self.curPage=page;
+                self.curPage = page;
             }
         }
-        
+
         return self;
     }
 }

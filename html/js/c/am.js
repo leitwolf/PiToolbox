@@ -14,9 +14,9 @@ var AccountsManager = {
         // 选择账户
         self.selectAccount = function (name) {
             self.curAccount = self.getAccount(name);
-            if (self.curAccount==null) {
+            if (self.curAccount == null) {
                 console.log("no account name " + name);
-            }            
+            }
         }
         // 获取指定的账户
         self.getAccount = function (name) {
@@ -33,10 +33,10 @@ var AccountsManager = {
             return self.curAccount == null || self.curAccount.curFile == null || self.curAccount.curFile.id == "";
         }
         // 获取当前要显示的文件列表
-        self.getShowList=function () {
-            var list=[];
-            if (self.curAccount&&self.curAccount.curFile) {
-                list=self.curAccount.curFile.children;
+        self.getShowList = function () {
+            var list = [];
+            if (self.curAccount && self.curAccount.curFile) {
+                list = self.curAccount.curFile.children;
             }
             return list;
         }

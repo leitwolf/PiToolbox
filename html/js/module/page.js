@@ -5,7 +5,7 @@ var Page = {
         // 生成的html
         self.htmlContent = "";
         // 当前是否是处理于激活状态
-        self.activated=false;
+        self.activated = false;
         // 是否激活
         self.toggleActivate = function () {
         }

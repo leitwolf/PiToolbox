@@ -18,13 +18,13 @@ var Fileinfo = {
         // [{file,file}]
         self.children = [];
         // 是否已加载下层文件
-        self.loaded=false;
+        self.loaded = false;
         // 添加子层文件
         self.addChild = function (file) {
             // 添加下一层文件
             self.children.push(file);
             file.parent = self;
-            self.loaded=true;
+            self.loaded = true;
         }
 
         return self;

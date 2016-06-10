@@ -5,9 +5,13 @@ var Net = {
         // 发送地址
         var url = "action";
         // 发送
-        self.send = function (module, action, data) {
+        // @param showLoading 是否显示正在加载
+        self.send = function (module, action, data, showLoading) {
             if (data == undefined) {
                 data = null;
+            }
+            if (showLoading) {
+                addLoading(1);
             }
             var obj = { module: module, action: action, data: data };
             $.ajax({
@@ -19,9 +23,15 @@ var Net = {
                 success: function (result) {
                     console.log(result);
                     handler(result);
+                    if (showLoading) {
+                        addLoading(-1);
+                    }
                 },
                 error: function (req, textStatus, errorThrown) {
                     $.zui.messager.show('服务器错误: ' + textStatus + errorThrown, { type: 'danger', time: 3000 });
+                    if (showLoading) {
+                        addLoading(-1);
+                    }
                 }
             });
         }
@@ -55,6 +65,18 @@ var Net = {
                 } else if (action == "download") {
                     $.zui.messager.show('添加下载成功', { type: 'success', time: 2000 });
                 }
+            }
+        }
+        // 此计数是用于正在加载，当需要显示时+1，响应之后-1，
+        // ==1时显示正在加载，==0则是没有正在加载的了，可以停止显示
+        var loadingCount = 0;
+        var loadingMsg = new $.zui.Messager('正在加载。。。', { type: 'info', placement: 'top-right' });
+        var addLoading = function (num) {
+            loadingCount += num;
+            if (num == 1 && loadingCount == 1) {
+                loadingMsg.show();
+            } else if (num == -1 && loadingCount == 0) {
+                loadingMsg.hide();
             }
         }
 

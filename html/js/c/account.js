@@ -19,7 +19,7 @@ var Account = {
                 return;
             }
             // 要把之前的列表先清空
-            target.children=[];
+            target.children = [];
             for (var i = 0; i < list.length; i++) {
                 var obj = list[i];
                 var file = Fileinfo.createNew(obj["id"], obj["title"], obj["size"], obj["url"]);

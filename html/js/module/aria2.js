@@ -14,7 +14,7 @@ var Aria2 = {
             }
             else {
                 clearTick();
-                document.title="PiToolbox";
+                document.title = "PiToolbox";
             }
         }
         // 设置版本号
@@ -52,7 +52,7 @@ var Aria2 = {
 
             if (self.activated) {
                 // 修改页面标题
-                document.title=data.speed;
+                document.title = data.speed;
             }
             doingRequestData = false;
             // 继续请求数据
