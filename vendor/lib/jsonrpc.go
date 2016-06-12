@@ -44,8 +44,12 @@ func CallJSONRPC(url string, req *JSONRPCRequest) (res *JSONRPCResponse, err err
 	if err != nil {
 		return
 	}
+	// ioutil.WriteFile("test/aria2.json", content, 777)
 	// println("res", string(content))
 	res = &JSONRPCResponse{}
 	err = json.Unmarshal(content, res)
+	// if err != nil {
+	// 	println(err.Error())
+	// }
 	return
 }

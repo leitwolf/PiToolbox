@@ -144,44 +144,6 @@ var Aria2 = {
             doingRequestData = true;
             C.getModule("net").send("aria2", "getStat");
         }
-        var requestData2 = function () {
-            var item = {};
-            item["gid"] = "1";
-            item["filename"] = "[茶马古道].KBS.As.In.Heaven.Ep01.BDRip.1080p.x264.AC3.Audio-CHD.mkv";
-            item["size"] = "6.42GB";
-            item["speed"] = "3.67MB/s";
-            item["progress"] = "10";
-            item["status"] = "active";
-            var item1 = {};
-            item1["gid"] = "5";
-            item1["filename"] = "[茶马古道].KBS.As.In.Heaven.Ep05.BDRip.1080p.x264.AC3.Audio-CHD.mkv";
-            item1["size"] = "6.42GB";
-            item1["speed"] = "2MB/s";
-            item1["progress"] = "50";
-            item1["status"] = "paused";
-            var item2 = {};
-            item2["gid"] = "2";
-            item2["filename"] = "[茶马古道1].KBS.As.In.Heaven.Ep02.BDRip.1080p.x264.AC3.Audio-CHD.mkv";
-            item2["size"] = "3.42GB";
-            item2["speed"] = "3.67MB/s";
-            item2["progress"] = "80";
-            item2["status"] = "waiting";
-            var item3 = {};
-            item3["gid"] = "7";
-            item3["filename"] = "[茶马古道].KBS.As.In.Heaven.Ep07.BDRip.1080p.x264.AC3.Audio-CHD.mkv";
-            item3["size"] = "6.42GB";
-            item3["progress"] = "30";
-            item3["status"] = "complete";
-            var item4 = {};
-            item4["gid"] = "8";
-            item4["filename"] = "[茶马古道1].KBS.As.In.Heaven.Ep08.BDRip.1080p.x264.AC3.Audio-CHD.mkv";
-            item4["size"] = "3.42GB";
-            item4["progress"] = "80";
-            item4["status"] = "error";
-            var speed = Math.floor(Math.random() * 500) + "KB/s";
-            var data = { speed: speed, activeTasks: [item, item1, item2], stopedTasks: [item3, item4] };
-            self.setData(data);
-        }
         // 先检测是否已选择了任务
         // @param taskType [active stoped]
         var checkSelectValues = function (taskType) {

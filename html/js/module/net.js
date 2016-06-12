@@ -56,12 +56,13 @@ var Net = {
                 else {
                     aria2.refresh();
                 }
-            } else if (module == "xunlei") {
-                var xunlei = C.getModule("xunlei");
+            } else {
+                // 各个下载页面的调用都一样
+                var downPage = C.getModule(module);
                 if (action == "getAccountList") {
-                    xunlei.setAccountList(data);
+                    downPage.setAccountList(data);
                 } else if (action == "loadData") {
-                    xunlei.setData(data);
+                    downPage.setData(data);
                 } else if (action == "download") {
                     $.zui.messager.show('添加下载成功', { type: 'success', time: 2000 });
                 }

@@ -280,12 +280,14 @@ func (a *Aria2) analyseTasks(data interface{}) (tasks []Aria2Task) {
 		task.Size = lib.GetReadableSize(m["totalLength"].(string)) + "B"
 		// 完成百分比
 		total, _ := strconv.Atoi(m["totalLength"].(string))
-		complete, _ := strconv.Atoi(m["completedLength"].(string))
-		p := float32(complete) * 100.0 / float32(total)
-		progress, _ := strconv.ParseFloat(strconv.FormatFloat(float64(p), 'f', 2, 32), 32)
-		task.Progress = float32(progress)
+		if total > 0 {
+			complete, _ := strconv.Atoi(m["completedLength"].(string))
+			p := float32(complete) * 100.0 / float32(total)
+			progress, _ := strconv.ParseFloat(strconv.FormatFloat(float64(p), 'f', 2, 32), 32)
+			task.Progress = float32(progress)
+		}
 		task.Speed = lib.GetReadableSize(m["downloadSpeed"].(string)) + "B/s"
-		task.Connections = m["connections"].(string)
+		task.Connections, _ = m["connections"].(string)
 		// 文件名从files中取，只取第一个，去掉路径
 		files := m["files"].([]interface{})
 		file := files[0].(map[string]interface{})

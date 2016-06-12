@@ -1,4 +1,4 @@
-// 页面基类
+// 页面基类 aria2 xunlei等等
 var Page = {
     createNew: function () {
         var self = {};

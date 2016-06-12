@@ -54,13 +54,15 @@ func LoadAccountList(accountType string) (accountList []Account, err error) {
 		return
 	}
 	prefix := "cookies_" + accountType
+	defaultAccount := prefix + ".json"
+	// println("default", defaultAccount)
 	for i := 0; i < len(dir); i++ {
 		f := dir[i]
 		name := f.Name()
 		if !f.IsDir() && strings.HasPrefix(name, prefix) && strings.HasSuffix(name, ".json") {
 			var accountName string
 			// 只一个，default
-			if name == "cookies_xunlei.json" {
+			if name == defaultAccount {
 				accountName = "default"
 			} else {
 				accountName = name[len(prefix)+1 : len(name)-5]

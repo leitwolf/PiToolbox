@@ -1,12 +1,17 @@
-// 迅雷离线下载
-var Xunlei = {
+// 360下载
+var Yun360 = {
     createNew: function () {
-        var self = DownBase.createNew("xunlei");
+        var self = DownBase.createNew("yun360");
         // 标题头
-        self.header = "迅雷离线下载";
+        self.header = "360云盘下载";
         // 加载数据
         self.loadData = function (id) {
-            C.getModule("net").send(self.className, "loadData", { account: self.am.curAccount.name, id: id }, true);
+            var file = self.am.curAccount.searchFile(id, null);
+            var path = file.path;
+            if (!path) {
+                path = "";
+            }
+            C.getModule("net").send(self.className, "loadData", { account: self.am.curAccount.name, id: id, path: path }, true);
         }
         // 把服务器返回的数据转换成Fileinfo列表
         self.transFilelist = function (list) {
@@ -14,10 +19,8 @@ var Xunlei = {
             for (var i = 0; i < list.length; i++) {
                 var obj = list[i];
                 var file = Fileinfo.createNew(obj["id"], obj["title"], obj["size"]);
-                file.url = obj["url"];
-                if (file.url == "") {
-                    file.isdir = true;
-                }
+                file.path = obj["path"];
+                file.isdir = obj["isdir"];
                 filelist.push(file);
             }
             return filelist;
@@ -30,7 +33,7 @@ var Xunlei = {
                 var id = idList[i];
                 var f = self.am.curAccount.searchFile(id, curFile);
                 if (f) {
-                    list.push({ title: f.title, url: f.url });
+                    list.push({ id: f.id, title: f.title, path: f.path });
                 }
             }
             return list;

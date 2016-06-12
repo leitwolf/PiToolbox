@@ -13,28 +13,12 @@ import (
 
 // Xunlei 迅雷离线下载
 type Xunlei struct {
-	// 账户列表
-	accountList []lib.Account
-}
-
-// GetAccountList 获取账户列表
-// 返回 [Account.Name] 列表
-func (xl *Xunlei) GetAccountList(sender *Sender) {
-	list, err := lib.LoadAccountList("xunlei")
-	if err != nil {
-		sender.Err = err.Error()
-		return
-	}
-	xl.accountList = list
-	var names []string
-	for i := 0; i < len(list); i++ {
-		names = append(names, list[i].Name)
-	}
-	sender.Data = names
+	YunBase
 }
 
 // LoadData 加载数据
-// 返回 {id:id,account:account,list:[{id,title,size,url}]}
+// @param data {account,id}
+// @return 返回 {account:account,id:id,list:[{id,title,size,url}]}
 func (xl *Xunlei) LoadData(sender *Sender, data interface{}) {
 	data2, ok := data.(map[string]interface{})
 	if !ok {
@@ -43,7 +27,6 @@ func (xl *Xunlei) LoadData(sender *Sender, data interface{}) {
 	}
 	accountName, _ := data2["account"].(string)
 	id, _ := data2["id"].(string)
-	// println("account", accountName, taskID)
 	cc := xl.getCookieContainer(accountName)
 	if cc == nil {
 		sender.Err = "No account name: " + accountName
@@ -56,7 +39,7 @@ func (xl *Xunlei) LoadData(sender *Sender, data interface{}) {
 			sender.Err = err.Error()
 			return
 		}
-		sender.Data = map[string]interface{}{"id": id, "account": accountName, "list": resultList}
+		sender.Data = map[string]interface{}{"account": accountName, "id": id, "list": resultList}
 	} else {
 		// 获取bt
 		resultList, err := xl.getBt(cc, id)
@@ -64,12 +47,13 @@ func (xl *Xunlei) LoadData(sender *Sender, data interface{}) {
 			sender.Err = err.Error()
 			return
 		}
-		sender.Data = map[string]interface{}{"id": id, "account": accountName, "list": resultList}
+		sender.Data = map[string]interface{}{"account": accountName, "id": id, "list": resultList}
 	}
 }
 
 // Download 下载
-// {account:xxx,list:[{title,url},xxx]}
+// @param data {account:xxx,list:[{title,url},xxx]}
+// @return 如果成功返回ok
 func (xl *Xunlei) Download(sender *Sender, data interface{}) {
 	data2, ok := data.(map[string]interface{})
 	if !ok {
@@ -97,8 +81,8 @@ func (xl *Xunlei) Download(sender *Sender, data interface{}) {
 			return
 		}
 		title, _ := obj["title"].(string)
-		url, _ := obj["url"].(string)
-		_, err := C.Aria2.AddDownload(url, title, header)
+		urlStr, _ := obj["url"].(string)
+		_, err := C.Aria2.AddDownload(urlStr, title, header)
 		if err != nil {
 			success = false
 			sender.Err = err.Error()
@@ -111,24 +95,23 @@ func (xl *Xunlei) Download(sender *Sender, data interface{}) {
 }
 
 // getMainList 获取主页面列表信息
-// 返回 {id,title,size,url}，url为空则是bt文件夹
+// @return 返回 [{id,title,size,url}]，url为空则是bt文件夹
 func (xl *Xunlei) getMainList(cc *lib.CookieContainer) (resultList []interface{}, err error) {
 	// 请求页面数据
-	url := "http://dynamic.cloud.vip.xunlei.com/user_task?userid=" + cc.GetValueByName("userid")
-	res, err := lib.GetHTMLWithCookies(url, cc)
+	urlStr := "http://dynamic.cloud.vip.xunlei.com/user_task?userid=" + cc.GetValueByName("userid")
+	res, err := lib.GetHTML(urlStr, cc)
 	if err != nil {
-		// println("main aa", err.Error())
 		return
 	}
 	defer res.Body.Close()
+	// test
 	// body, err := ioutil.ReadAll(res.Body)
 	// if err != nil {
 	// 	println("body", err.Error())
 	// }
-	// ioutil.WriteFile("res.html", body, 0777)
+	// ioutil.WriteFile("test/res.html", body, 0777)
 	q, err := lib.NewQueryFromReader(res.Body)
 	if err != nil {
-		// println("main bb", err.Error())
 		return
 	}
 	// 获取列表
@@ -143,7 +126,6 @@ func (xl *Xunlei) getMainList(cc *lib.CookieContainer) (resultList []interface{}
 	for i := 0; i < len(list); i++ {
 		str := q.GetNodeAttr(list[i], "id")
 		id := str[5:]
-		// println("taskid", id)
 		// 查看下载状态是否已完成
 		node := q.GetNodeByID("d_status" + id)
 		status := q.GetNodeAttr(node, "value")
@@ -163,15 +145,14 @@ func (xl *Xunlei) getMainList(cc *lib.CookieContainer) (resultList []interface{}
 }
 
 // getBt 获取bt列表
+// @return 返回 [{id,title,size,url}]，url为空则是bt文件夹
 func (xl *Xunlei) getBt(cc *lib.CookieContainer, taskID string) (resultList []interface{}, err error) {
 	// 请求页面数据
 	userid := cc.GetValueByName("userid")
 	callback := "fill_bt_list"
-	url := "http://dynamic.cloud.vip.xunlei.com/interface/fill_bt_list?tid=" + taskID + "&g_net=1&p=1&uid=" + userid + "&callback=" + callback
-	// println("url", url)
-	res, err := lib.GetHTMLWithCookies(url, cc)
+	urlStr := "http://dynamic.cloud.vip.xunlei.com/interface/fill_bt_list?tid=" + taskID + "&g_net=1&p=1&uid=" + userid + "&callback=" + callback
+	res, err := lib.GetHTML(urlStr, cc)
 	if err != nil {
-		// println("bt bb", err.Error())
 		return
 	}
 	defer res.Body.Close()
@@ -193,16 +174,14 @@ func (xl *Xunlei) getBt(cc *lib.CookieContainer, taskID string) (resultList []in
 	// })
 	b, err := ioutil.ReadAll(res.Body)
 	if err != nil {
-		// println("bt bb", err.Error())
 		return
 	}
 	str := string(b)
-	// fmt.Println(str)
+	// 获取jsonp中的内容
 	str = str[len(callback)+1 : len(str)-1]
 	result := map[string]interface{}{}
 	err = json.Unmarshal([]byte(str), &result)
 	if err != nil {
-		// println("bt cc", err.Error())
 		return
 	}
 	result, ok := result["Result"].(map[string]interface{})
@@ -240,19 +219,8 @@ func (xl *Xunlei) getBt(cc *lib.CookieContainer, taskID string) (resultList []in
 	return
 }
 
-// getCookieContainer 获取指定的cookie
-func (xl *Xunlei) getCookieContainer(accountName string) (cc *lib.CookieContainer) {
-	for i := 0; i < len(xl.accountList); i++ {
-		if xl.accountList[i].Name == accountName {
-			cc = xl.accountList[i].CookieContainer
-			return
-		}
-	}
-	return
-}
-
 // NewXunlei 新建
 func NewXunlei() (xunlei *Xunlei) {
-	xunlei = &Xunlei{accountList: []lib.Account{}}
+	xunlei = &Xunlei{YunBase{accountType: "xunlei", accountList: []lib.Account{}}}
 	return
 }

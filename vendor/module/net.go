@@ -97,6 +97,14 @@ func actionDispatch(m string, a string, data interface{}, sender *Sender) {
 		} else if a == "download" {
 			C.Xunlei.Download(sender, data)
 		}
+	} else if m == "yun360" {
+		if a == "getAccountList" {
+			C.Yun360.GetAccountList(sender)
+		} else if a == "loadData" {
+			C.Yun360.LoadData(sender, data)
+		} else if a == "download" {
+			C.Yun360.Download(sender, data)
+		}
 	}
 }
 
@@ -106,6 +114,7 @@ func StartServer(port int) {
 	log.Println("Listening on port: " + strconv.Itoa(port))
 	// 静态文件
 	http.Handle("/", http.FileServer(http.Dir("./html")))
+	// 客户端处理操作
 	http.HandleFunc("/action", reqHandler)
 	err := http.ListenAndServe(addr, nil)
 	if err != nil {

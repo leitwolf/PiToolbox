@@ -10,8 +10,8 @@ var Account = {
         self.curFile = self.rootFile;
         // 设置数据
         // @param id 所属的文件号，如果是""则是根目录
-        // @param list 文件列表，只是服务器发来的数据
-        self.setData = function (id, list) {
+        // @param filelist 文件列表，已设置好的fileinfo列表
+        self.setData = function (id, filelist) {
             var target = self.searchFile(id, null);
             // 没有找到对应的文件，则无效
             if (target == null) {
@@ -20,9 +20,8 @@ var Account = {
             }
             // 要把之前的列表先清空
             target.children = [];
-            for (var i = 0; i < list.length; i++) {
-                var obj = list[i];
-                var file = Fileinfo.createNew(obj["id"], obj["title"], obj["size"], obj["url"]);
+            for (var i = 0; i < filelist.length; i++) {
+                var file = filelist[i];
                 target.addChild(file);
             }
         }
@@ -32,6 +31,7 @@ var Account = {
         }
         // 通过id找到对应的文件
         // @param file 要查找的文件树 null则是从根目录开始查
+        // @return 返回找到的文件树，没有找到返回null
         self.searchFile = function (id, file) {
             if (file == null) {
                 file = self.rootFile;

@@ -9,6 +9,8 @@ function init() {
     C.registerModule("aria2", aria2);
     var xunlei = Xunlei.createNew();
     C.registerModule("xunlei", xunlei);
+    var yun360 = Yun360.createNew();
+    C.registerModule("yun360", yun360);
 
     sidebar.loadItem("aria2");
 }
