@@ -20,10 +20,13 @@ type Aria2Task struct {
 	Filename string `json:"filename"`
 	// 状态 active waiting paused error complete removed
 	Status string `json:"status"`
-	Size   string `json:"size"`
+	// 总大小
+	Size int `json:"size"`
+	// 已完成大小
+	CompletedLength int `json:"completedLength"`
 	// 进度0-100
 	Progress float32 `json:"progress"`
-	Speed    string  `json:"speed"`
+	Speed    int     `json:"speed"`
 	// 与服务器连接数
 	Connections string `json:"connections"`
 }
@@ -269,6 +272,7 @@ func (a *Aria2) getStat() (stat *Aria2Stat, err error) {
 }
 
 // analyseTasks 分析返回的任务信息，处理一些信息
+// @return [{}]
 func (a *Aria2) analyseTasks(data interface{}) (tasks []Aria2Task) {
 	// fmt.Printf("%v\n", data)
 	list := data.([]interface{})
@@ -277,16 +281,18 @@ func (a *Aria2) analyseTasks(data interface{}) (tasks []Aria2Task) {
 		task := Aria2Task{}
 		task.GID = m["gid"].(string)
 		task.Status = m["status"].(string)
-		task.Size = lib.GetReadableSize(m["totalLength"].(string)) + "B"
+		totalLength := m["totalLength"].(string)
+		task.Size, _ = strconv.Atoi(totalLength)
+		completedLength := m["completedLength"].(string)
+		task.CompletedLength, _ = strconv.Atoi(completedLength)
 		// 完成百分比
-		total, _ := strconv.Atoi(m["totalLength"].(string))
-		if total > 0 {
-			complete, _ := strconv.Atoi(m["completedLength"].(string))
-			p := float32(complete) * 100.0 / float32(total)
+		if task.Size > 0 {
+			p := float32(task.CompletedLength) * 100.0 / float32(task.Size)
 			progress, _ := strconv.ParseFloat(strconv.FormatFloat(float64(p), 'f', 2, 32), 32)
 			task.Progress = float32(progress)
 		}
-		task.Speed = lib.GetReadableSize(m["downloadSpeed"].(string)) + "B/s"
+		speed := m["downloadSpeed"].(string)
+		task.Speed, _ = strconv.Atoi(speed)
 		task.Connections, _ = m["connections"].(string)
 		// 文件名从files中取，只取第一个，去掉路径
 		files := m["files"].([]interface{})

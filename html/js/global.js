@@ -48,6 +48,46 @@ var Helper = {
         }
         return html;
     },
+    // 把纯数字大小转成G M K的样式
+    _G: 1024 * 1024 * 1024,
+    _M: 1024 * 1024,
+    _K: 1024,
+    getReadableSize: function (size) {
+        size = parseInt(size);
+        var readable = "";
+        if (size >= Helper._G) {
+            var r = size / Helper._G;
+            readable = r.toFixed(2) + "G";
+        } else if (size >= Helper._M) {
+            var r = size / Helper._M;
+            readable = r.toFixed(2) + "M";
+        } else if (size >= Helper._K) {
+            var r = size / Helper._K;
+            readable = r.toFixed(2) + "K";
+        } else {
+            readable = size + "";
+        }
+        return readable;
+    },
+    // 把纯数字时间少转成时，分，秒的形式
+    _HOUR: 3600,
+    _MINUTE: 60,
+    getReadableTime: function (seconds) {
+        seconds = parseInt(seconds);
+        var readable = "";
+        if (seconds >= Helper._HOUR) {
+            var h = Math.floor(seconds / Helper._HOUR);
+            readable += h + "h";
+            seconds -= h * Helper._HOUR;
+        }
+        if (seconds >= Helper._MINUTE) {
+            var m = Math.floor(seconds / Helper._MINUTE);
+            readable += m + "m";
+            seconds -= m * Helper._MINUTE;
+        }
+        readable += seconds + "s";
+        return readable;
+    },
 }
 
 // js中多行文本实现

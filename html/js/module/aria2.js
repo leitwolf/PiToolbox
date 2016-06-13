@@ -188,12 +188,22 @@ var Aria2ActiveTask = {
             } else {
                 for (var i = 0; i < data.length; i++) {
                     var item = data[i];
+                    var size = item["size"];
+                    var completedLength = item["completedLength"];
+                    var speed = item["speed"];
+                    // 剩余时间
+                    var leftTimeStr = "---";
+                    if (speed > 0) {
+                        var leftTime = Math.floor((size - completedLength) / speed);
+                        leftTimeStr = Helper.getReadableTime(leftTime);
+                    }
+                    var sizeStr = Helper.getReadableSize(size);
                     body += '<tr>';
                     body += '<td><input name="' + checkName + '" type="checkbox" value="' + item["gid"] + '"></td>';
                     body += '<td>' + item["filename"] + '</td>';
-                    body += '<td>' + item["size"] + '</td>';
-                    body += '<td>' + item["speed"] + '</td>';
-                    body += '<td>' + item["connections"] + '</td>';
+                    body += '<td>' + sizeStr + 'B</td>';
+                    body += '<td>' + Helper.getReadableSize(item["speed"]) + 'B/s</td>';
+                    body += '<td>' + leftTimeStr + '</td>';
                     body += '<td>' + Helper.getProgressBar(item["progress"]) + '</td>';
                     body += '<td>' + Helper.getStatusLabel(item["status"]) + '</td>';
                     body += '</tr>';
@@ -232,7 +242,7 @@ var Aria2StopedTask = {
                     body += '<tr>';
                     body += '<td><input name="' + checkName + '" type="checkbox" value="' + item["gid"] + '"></td>';
                     body += '<td>' + item["filename"] + '</td>';
-                    body += '<td>' + item["size"] + '</td>';
+                    body += '<td>' + Helper.getReadableSize(item["size"]) + 'B</td>';
                     body += '<td>' + Helper.getProgressBar(item["progress"]) + '</td>';
                     body += '<td>' + Helper.getStatusLabel(item["status"]) + '</td>';
                     body += '</tr>';
@@ -299,8 +309,8 @@ var aria2_activeTemplate = multiline(function () {/*
             <th width="47%">文件名</th>
             <th width="8%">文件大小</th>
             <th width="5%">速度</th>
-            <th width="8%">连接数</th>
-            <th width="22%">进度</th>
+            <th width="10%">剩余时间</th>
+            <th width="20%">进度</th>
             <th width="5%">状态</th>
         </tr>
     </thead>
