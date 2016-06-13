@@ -31,7 +31,43 @@ var DownBase = {
                 } else {
                     Helper.callLater(self.fillHtml);
                 }
+                // 添加账户事件
+                self.handleAddAccount();
             }
+        }
+        // 处理添加账户cookies文件
+        // mount html到页面时调用
+        self.handleAddAccount = function () {
+            $('[data-toggle="tooltip"]').tooltip();
+            $("#cookie_file").on("change", function () {
+                var files = $(this).prop("files");
+                var file = files[0];
+                // 验证文件格式
+                var prefix = "cookies_" + self.className;
+                var suffix = ".json";
+                var name = file.name;
+                var valid = true;
+                if (name.length < (prefix.length + suffix.length)) {
+                    valid = false;
+                }
+                else if (name.substr(0, prefix.length) != prefix) {
+                    valid = false;
+                }
+                else if (name.substr(name.length - suffix.length) != suffix) {
+                    valid = false;
+                }
+                if (!valid) {
+                    $.zui.messager.show('cookies文件名称格式不对', { type: 'danger', time: 3000 });
+                    return;
+                }
+                // 读取
+                var reader = new FileReader();
+                reader.readAsText(file);
+                reader.onload = function (e) {
+                    var text = e.target.result;
+                    C.getModule("net").send("cookies", "save", { filename: name, content: text, page: self.className });
+                }
+            })
         }
         // 获取账号列表
         self.getAccountList = function () {
@@ -210,7 +246,12 @@ var DownBase = {
 
 // 模板
 var downbase_template = multiline(function () {/*
-<h1 class="page-header">{{header}}</h1>
+<h1 class="page-header">{{header}} &nbsp;&nbsp;&nbsp;
+    <div class="btn btn-primary btn-file" data-toggle="tooltip" data-placement="right" data-container="body" title="格式: cookies_{{className}}_xxx.json">
+        <i class="icon icon-folder-open"></i> 添加账户cookies文件
+        <input id="cookie_file" type="file">
+    </div>
+</h1>
 <hr/>
 <ul id="accountList" class="nav nav-secondary hidden" style="padding-bottom:10px;">
 </ul>

@@ -56,7 +56,7 @@ var Net = {
                 else {
                     aria2.refresh();
                 }
-            } else {
+            } else if (module == "xunlei" || module == "yun360") {
                 // 各个下载页面的调用都一样
                 var downPage = C.getModule(module);
                 if (action == "getAccountList") {
@@ -65,6 +65,18 @@ var Net = {
                     downPage.setData(data);
                 } else if (action == "download") {
                     $.zui.messager.show('添加下载成功', { type: 'success', time: 2000 });
+                }
+            } else if (module == "cookies") {
+                if (action == "save") {
+                    // 保存cookies成功，刷新页面
+                    var page = data;
+                    var url = document.location.href;
+                    var index = url.indexOf("?");
+                    if (index != -1) {
+                        url = url.substring(0, index);
+                    }
+                    url += "?" + page;
+                    document.location.href = url;
                 }
             }
         }

@@ -12,5 +12,14 @@ function init() {
     var yun360 = Yun360.createNew();
     C.registerModule("yun360", yun360);
 
-    sidebar.loadItem("aria2");
+    var q = document.location.search;
+    if (q == "?xunlei") {
+        sidebar.loadItem("xunlei");
+    }
+    else if (q == "?yun360") {
+        sidebar.loadItem("yun360");
+    }
+    else {
+        sidebar.loadItem("aria2");
+    }
 }

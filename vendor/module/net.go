@@ -38,14 +38,14 @@ func reqHandler(res http.ResponseWriter, req *http.Request) {
 	// defer req.Body.Close()
 	content, err := ioutil.ReadAll(req.Body)
 	if err != nil {
-		res.Write([]byte("aaa"))
+		res.Write([]byte("bad request body"))
 		return
 	}
 	log.Println("receive: ", string(content))
 	var receiver Receiver
 	err = json.Unmarshal(content, &receiver)
 	if err != nil {
-		res.Write([]byte("bbb"))
+		res.Write([]byte("bad request content"))
 		return
 	}
 	sender := &Sender{}
@@ -59,7 +59,7 @@ func reqHandler(res http.ResponseWriter, req *http.Request) {
 
 	b, err := json.Marshal(*sender)
 	if err != nil {
-		res.Write([]byte("ccc"))
+		res.Write([]byte("bad response data"))
 		return
 	}
 	// log.Println("send:", string(b))
@@ -105,7 +105,35 @@ func actionDispatch(m string, a string, data interface{}, sender *Sender) {
 		} else if a == "download" {
 			C.Yun360.Download(sender, data)
 		}
+	} else if m == "cookies" {
+		if a == "save" {
+			// 保存cookies
+			saveCookies(sender, data)
+		}
 	}
+}
+
+// 保存cookies
+func saveCookies(sender *Sender, data interface{}) {
+	data2 := data.(map[string]interface{})
+	filename, ok := data2["filename"].(string)
+	if !ok {
+		sender.Err = "bad cookies filename"
+		return
+	}
+	content, ok := data2["content"].(string)
+	if !ok {
+		sender.Err = "bad cookies content"
+		return
+	}
+	err := ioutil.WriteFile("config/"+filename, []byte(content), 777)
+	if err != nil {
+		sender.Err = err.Error()
+		return
+	}
+	// 当前页面
+	page, _ := data2["page"].(string)
+	sender.Data = page
 }
 
 // StartServer 开启web服务

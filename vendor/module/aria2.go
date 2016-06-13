@@ -44,10 +44,8 @@ type Aria2Stat struct {
 
 // Aria2 与aria2相关的操作
 type Aria2 struct {
-	url string
-	// 是否可连接
-	connected bool
-	version   string
+	url     string
+	version string
 }
 
 // ===start 交互相关==
@@ -356,6 +354,6 @@ func NewAria2() (aria2 *Aria2) {
 		// 默认的aria2连接地址
 		url = "http://localhost:6800/jsonrpc"
 	}
-	aria2 = &Aria2{url: url, connected: false}
+	aria2 = &Aria2{url: url}
 	return
 }
