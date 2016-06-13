@@ -9,6 +9,7 @@ import (
 	"io/ioutil"
 	"lib"
 	"strconv"
+	"strings"
 )
 
 // Xunlei 迅雷离线下载
@@ -36,7 +37,7 @@ func (xl *Xunlei) LoadData(sender *Sender, data interface{}) {
 		// 获取主页面
 		resultList, err := xl.getMainList(cc)
 		if err != nil {
-			sender.Err = err.Error()
+			sender.Err = err.Error() + " | xunlei:39"
 			return
 		}
 		sender.Data = map[string]interface{}{"account": accountName, "id": id, "list": resultList}
@@ -44,7 +45,7 @@ func (xl *Xunlei) LoadData(sender *Sender, data interface{}) {
 		// 获取bt
 		resultList, err := xl.getBt(cc, id)
 		if err != nil {
-			sender.Err = err.Error()
+			sender.Err = err.Error() + " | xunlei:47"
 			return
 		}
 		sender.Data = map[string]interface{}{"account": accountName, "id": id, "list": resultList}
@@ -85,7 +86,7 @@ func (xl *Xunlei) Download(sender *Sender, data interface{}) {
 		_, err := C.Aria2.AddDownload(urlStr, title, header)
 		if err != nil {
 			success = false
-			sender.Err = err.Error()
+			sender.Err = err.Error() + " | xunlei:88"
 		}
 	}
 	if success {
@@ -95,57 +96,76 @@ func (xl *Xunlei) Download(sender *Sender, data interface{}) {
 }
 
 // getMainList 获取主页面列表信息
-// @return 返回 [{id,title,size,url}]，url为空则是bt文件夹
+// @return 返回 [{id,title,size,url,isdir}]
 func (xl *Xunlei) getMainList(cc *lib.CookieContainer) (resultList []interface{}, err error) {
-	// 请求页面数据
-	urlStr := "http://dynamic.cloud.vip.xunlei.com/user_task?userid=" + cc.GetValueByName("userid")
+	callback := "jsonp1465702254496"
+	urlStr := "http://dynamic.cloud.vip.xunlei.com/interface/showtask_unfresh?callback=" + callback + "&type_id=4&page=1&tasknum=300&p=1&interfrom=task"
 	res, err := lib.GetHTML(urlStr, cc)
 	if err != nil {
 		return
 	}
 	defer res.Body.Close()
-	// test
-	// body, err := ioutil.ReadAll(res.Body)
-	// if err != nil {
-	// 	println("body", err.Error())
-	// }
-	// ioutil.WriteFile("test/res.html", body, 0777)
-	q, err := lib.NewQueryFromReader(res.Body)
+	b, err := ioutil.ReadAll(res.Body)
 	if err != nil {
 		return
 	}
-	// 获取列表
-	// <input id="dflag175673410781696" name="dflag" type="hidden" value="0" />
-	// <input id="dl_url175673410781696" type="hidden" value="http://gdl.lixian.vip.xunlei.com/download?xxx" />
-	// <input id="taskname175673410781696" type="hidden" value="[一刀倾城].Blade.Of.Fury.1993.DVDRip.x264.AC3.2Audios-CMCT.mkv" />
-	// <input id="ysfilesize175673410781696" type="hidden" value="4676679449" />
-	// <input id="d_status1381822237122304" type="hidden" value="2" />
-	// [{taskID,taskName,url}]
-	list := q.GetNodesByName("dflag")
+	str := string(b)
+	// 获取jsonp中的内容
+	str = str[len(callback)+1 : len(str)-1]
+	result := map[string]interface{}{}
+	err = json.Unmarshal([]byte(str), &result)
+	if err != nil {
+		return
+	}
+	// 检测返回代码
+	rtcode, ok := result["rtcode"].(float64)
+	if !ok {
+		err = errors.New("bad response data")
+		return
+	}
+	if rtcode != 0 {
+		err = errors.New("wrong rtcode " + strconv.Itoa(int(rtcode)))
+		return
+	}
+	info, ok := result["info"].(map[string]interface{})
+	if !ok {
+		err = errors.New("bad response data['info']")
+		return
+	}
+	tasks, ok := info["tasks"].([]interface{})
+	if !ok {
+		err = errors.New("bad response data['info']['tasks']")
+		return
+	}
 	resultList = []interface{}{}
-	for i := 0; i < len(list); i++ {
-		str := q.GetNodeAttr(list[i], "id")
-		id := str[5:]
-		// 查看下载状态是否已完成
-		node := q.GetNodeByID("d_status" + id)
-		status := q.GetNodeAttr(node, "value")
-		if status != "2" {
+	for i := 0; i < len(tasks); i++ {
+		task, ok := tasks[i].(map[string]interface{})
+		if !ok {
 			continue
 		}
-		node = q.GetNodeByID("taskname" + id)
-		title := q.GetNodeAttr(node, "value")
-		node = q.GetNodeByID("ysfilesize" + id)
-		size := q.GetNodeAttr(node, "value")
+		id := task["id"]
+		title := task["taskname"]
+		isdir := false
+		urlStr, _ := task["lixian_url"].(string)
+		if strings.HasPrefix(urlStr, "bt:") {
+			// bt文件夹
+			urlStr = ""
+			isdir = true
+		}
+		status, _ := task["download_status"].(string)
+		if status != "2" && !isdir {
+			// 没有下载完成且非文件夹的，不计算
+			continue
+		}
+		size, _ := task["file_size"].(string)
 		size = lib.GetReadableSize(size) + "B"
-		node = q.GetNodeByID("dl_url" + id)
-		downurl := q.GetNodeAttr(node, "value")
-		resultList = append(resultList, map[string]string{"id": id, "title": title, "size": size, "url": downurl})
+		resultList = append(resultList, map[string]interface{}{"id": id, "title": title, "size": size, "url": urlStr, "isdir": isdir})
 	}
 	return
 }
 
 // getBt 获取bt列表
-// @return 返回 [{id,title,size,url}]，url为空则是bt文件夹
+// @return 返回 [{id,title,size,url,isdir}]，url为空则是bt文件夹
 func (xl *Xunlei) getBt(cc *lib.CookieContainer, taskID string) (resultList []interface{}, err error) {
 	// 请求页面数据
 	userid := cc.GetValueByName("userid")
@@ -156,22 +176,6 @@ func (xl *Xunlei) getBt(cc *lib.CookieContainer, taskID string) (resultList []in
 		return
 	}
 	defer res.Body.Close()
-	// 返回jsonp格式：
-	// fill_bt_list({
-	// 	"Result": {
-	// 		"Record": [
-	// 			{
-	// 				"id": 0,
-	// 				"title": "[\u5175\u4e34\u57ce\u4e0b(\u56fd\u82f1\u53cc\u8bed)].Enemy.At.The.Gates.2001.BluRay.720p.x264.AC3-CMCT.mkv",
-	// 				"download_status": "2",
-	// 				"percent": 100,
-	// 				"taskid": "1381832231362368",
-	// 				"downurl": "xxx",
-	//  			"filesize": "3061626294"
-	// 			}
-	// 		]
-	// 	}
-	// })
 	b, err := ioutil.ReadAll(res.Body)
 	if err != nil {
 		return
@@ -186,19 +190,19 @@ func (xl *Xunlei) getBt(cc *lib.CookieContainer, taskID string) (resultList []in
 	}
 	result, ok := result["Result"].(map[string]interface{})
 	if !ok {
-		err = errors.New("convert Result fail")
+		err = errors.New("bad response data['Result']")
 		return
 	}
 	list, ok := result["Record"].([]interface{})
 	if !ok {
-		err = errors.New("convert tasks fail")
+		err = errors.New("bad response data['Result']['Record']")
 		return
 	}
 	resultList = []interface{}{}
 	for i := 0; i < len(list); i++ {
 		obj, ok := list[i].(map[string]interface{})
 		if !ok {
-			err = errors.New("convert obj fail")
+			err = errors.New("bad response data['Result']['Record'][...]")
 			return
 		}
 		// 查看下载状态是否已完成
@@ -210,11 +214,15 @@ func (xl *Xunlei) getBt(cc *lib.CookieContainer, taskID string) (resultList []in
 		id := strconv.Itoa(id1)
 		taskid, _ := obj["taskid"].(string)
 		id = taskid + id
-		title, _ := obj["title"].(string)
+		title := obj["title"]
 		size, _ := obj["filesize"].(string)
 		size = lib.GetReadableSize(size) + "B"
-		downurl, _ := obj["downurl"].(string)
-		resultList = append(resultList, map[string]string{"id": id, "title": title, "size": size, "url": downurl})
+		urlStr := obj["downurl"]
+		isdir := false
+		if urlStr == "" {
+			isdir = true
+		}
+		resultList = append(resultList, map[string]interface{}{"id": id, "title": title, "size": size, "url": urlStr, "isdir": isdir})
 	}
 	return
 }

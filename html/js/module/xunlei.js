@@ -15,9 +15,7 @@ var Xunlei = {
                 var obj = list[i];
                 var file = Fileinfo.createNew(obj["id"], obj["title"], obj["size"]);
                 file.url = obj["url"];
-                if (file.url == "") {
-                    file.isdir = true;
-                }
+                file.isdir = obj["isdir"];
                 filelist.push(file);
             }
             return filelist;

@@ -51,13 +51,13 @@ func (y3 *Yun360) LoadData(sender *Sender, data interface{}) {
 	req.Header.Add("Referer", "http://c69.yunpan.360.cn/my")
 	res, err := lib.FetchHTML(req, cc)
 	if err != nil {
-		sender.Err = err.Error()
+		sender.Err = err.Error() + " | yun360:54"
 		return
 	}
 	defer res.Body.Close()
 	b, err := ioutil.ReadAll(res.Body)
 	if err != nil {
-		sender.Err = err.Error()
+		sender.Err = err.Error() + " | yun360:60"
 		return
 	}
 	content := string(b)
@@ -68,7 +68,7 @@ func (y3 *Yun360) LoadData(sender *Sender, data interface{}) {
 	var jsonData map[string]interface{}
 	err = json.Unmarshal([]byte(jsonStr), &jsonData)
 	if err != nil {
-		sender.Err = err.Error()
+		sender.Err = err.Error() + " | yun360:71"
 		return
 	}
 	// 开始解析
@@ -141,7 +141,7 @@ func (y3 *Yun360) Download(sender *Sender, data interface{}) {
 		downURL, err := y3.getDownURL(id, pathStr, cc)
 		if err != nil {
 			success = false
-			sender.Err = err.Error()
+			sender.Err = err.Error() + " | yun360:144"
 			continue
 		}
 		header := cc.GetHeaderStr()
@@ -149,7 +149,7 @@ func (y3 *Yun360) Download(sender *Sender, data interface{}) {
 		_, err = C.Aria2.AddDownload(downURL, title, header)
 		if err != nil {
 			success = false
-			sender.Err = err.Error()
+			sender.Err = err.Error() + " | yun360:152"
 		}
 	}
 	if success {
