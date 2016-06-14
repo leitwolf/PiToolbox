@@ -186,8 +186,6 @@ var Aria2ActiveTask = {
                 body += '<td colspan="7">没有进行中的任务</td>';
                 body += '</tr>';
             } else {
-                // 对列表进行反转，后加入的放在前面
-                data.reverse();
                 for (var i = 0; i < data.length; i++) {
                     var item = data[i];
                     var size = item["size"];
