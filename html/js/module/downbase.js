@@ -110,7 +110,7 @@ var DownBase = {
                 self.fillHtml();
             }
         }
-        // 进入bt文件夹
+        // 进入文件夹
         self.enterDir = function (id) {
             var am = self.am;
             am.curAccount.selectFile(id);
@@ -225,11 +225,31 @@ var DownBase = {
             else {
                 $("#accountList").addClass("hidden");
             }
-            // 是否是主页面
+            // 导航
             if (am.isRoot()) {
-                $("#back").addClass("hidden");
+                $("#nav").addClass("hidden");
             } else {
-                $("#back").removeClass("hidden");
+                $("#nav").removeClass("hidden");
+                var file = am.curAccount.curFile;
+                var str = "";
+                while (file != null) {
+                    var a = "";
+                    var content = file.title;
+                    // 根目录
+                    if (file.id == "") {
+                        content = '<i class="icon icon-home"></i> 根目录';
+                    }
+                    if (file == am.curAccount.curFile) {
+                        a = '<li class="active">' + content + '</li>';
+                    }
+                    else {
+                        var url = "javascript:C.getModule(\'" + self.className + "\').enterDir('" + file.id + "')";
+                        a = '<li><a href="' + url + '">' + content + '</a></li>';
+                    }
+                    str = a + str;
+                    file = file.parent;
+                }
+                $("#nav").html(str);
             }
             // 文件列表
             self.filesTable.setData(am.getShowList());
@@ -260,7 +280,8 @@ var downbase_template = multiline(function () {/*
     &nbsp;&nbsp;&nbsp;
     <a id="refresh" class="btn btn-primary hidden" href="javascript:C.getModule('{{className}}').refresh();" role="button"><i class="icon-refresh"></i> 刷新</a>
     &nbsp;&nbsp;&nbsp;
-    <a id="back" class="btn btn-primary hidden" href="javascript:C.getModule('{{className}}').goBack();" role="button"><i class="icon-home"></i> 返回主页面</a>
 </div>
+<ol id="nav" class="breadcrumb hidden" style="margin-bottom:1px;padding:5px;">
+</ol>
 {{table}}
 */});

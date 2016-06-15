@@ -5,7 +5,7 @@ var Account = {
         // 账户名称
         self.name = name;
         // 根文件树 id=""
-        self.rootFile = Fileinfo.createNew("", "", "", "");
+        self.rootFile = Fileinfo.createNew("", "", "");
         // 当前显示的文件树（实际显示的是file.children）
         self.curFile = self.rootFile;
         // 设置数据
