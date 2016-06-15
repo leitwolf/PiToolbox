@@ -70,7 +70,11 @@ func reqHandler(res http.ResponseWriter, req *http.Request) {
 // actionDispatch 操作分发
 func actionDispatch(m string, a string, data interface{}, sender *Sender) {
 	if m == "aria2" {
-		if a == "getVersion" {
+		if a == "getConfig" {
+			C.Aria2.GetConfig(sender)
+		} else if a == "saveConfig" {
+			C.Aria2.SaveConfig(sender, data)
+		} else if a == "getVersion" {
 			C.Aria2.GetVersion(sender)
 		} else if a == "getStat" {
 			C.Aria2.GetStat(sender)

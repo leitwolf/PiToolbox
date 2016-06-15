@@ -9,13 +9,21 @@ var Aria2 = {
                 if (aria2Version != "") {
                     self.setVersion(aria2Version)
                 } else {
-                    C.getModule("net").send("aria2", "getVersion");
+                    C.getModule("net").send("aria2", "getConfig");
                 }
             }
             else {
                 clearTick();
                 document.title = "PiToolbox";
             }
+        }
+        // 配置信息
+        self.setConfig = function (data) {
+            config.url = data.url;
+            // 之后获取版本号
+            C.getModule("net").send("aria2", "getVersion");
+            // 停止getStat
+            clearTick();
         }
         // 设置版本号
         self.setVersion = function (version) {
@@ -26,6 +34,7 @@ var Aria2 = {
             }
             else {
                 $("#version").html("Ver. " + version);
+                enableRequestData = true;
                 requestData();
             }
         };
@@ -58,6 +67,48 @@ var Aria2 = {
             // 继续请求数据
             tickData();
         };
+        // 显示设置界面
+        var settingDialog;
+        // 是否主动关闭对话框
+        var manualCloseDialog = false;
+        self.showSetting = function () {
+            manualCloseDialog = false;
+            var str = aria2_configTemplate.substr(0);
+            str = str.replace("{{value}}", config.url);
+            settingDialog = new $.zui.ModalTrigger({ custom: str, showHeader: false, size: '' });
+            settingDialog.show({
+                hidden: function () {
+                    // 对话框已关闭
+                    if (!manualCloseDialog) {
+                        // 非保存而关闭对话框且之前通信是通的，继续请求数据
+                        if (aria2Version != "") {
+                            enableRequestData = true;
+                            tickData();
+                        }
+                    }
+                }
+            });
+            // 此期间不请求数据
+            clearTick();
+            enableRequestData = false;
+        }
+        // 保存设置
+        self.saveSetting = function () {
+            var url = $("#rpcUrl").val();
+            if (url == "") {
+                // 没有填写，红框
+                $("rpcUrlC").addClass("has-error");
+                return;
+            }
+            manualCloseDialog = true;
+            settingDialog.close();
+            settingDialog = null;
+            // 把当前version和速度区清空
+            $("#version").html("");
+            $("#speed").html("");
+            // 保存到server
+            C.getModule("net").send("aria2", "saveConfig", { url: url });
+        }
         // 刷新，当完成操作后执行
         self.refresh = function () {
             clearTick();
@@ -113,6 +164,12 @@ var Aria2 = {
         self.removeAllStoped = function () {
             C.getModule("net").send("aria2", "removeAllStoped");
         };
+        // getStat 发生错误，但要把doingRequestData消除掉
+        self.getStatErr = function () {
+            doingRequestData = false;
+        }
+        // 配置
+        var config = { url: "" };
         // 版本号
         var aria2Version = "";
         // 任务类
@@ -129,6 +186,9 @@ var Aria2 = {
         // 定时调用数据
         var tickTimeHandler = 0;
         var tickData = function () {
+            if (!enableRequestData) {
+                return;
+            }
             tickTimeHandler = setTimeout(function () {
                 requestData();
             }, 2000);
@@ -142,8 +202,10 @@ var Aria2 = {
         // 请求数据
         // 是否在请求数据中，一次只能请求一次
         var doingRequestData = false;
+        // 是否可以查询（全局的变量）
+        var enableRequestData = true;
         var requestData = function () {
-            if (!self.activated || doingRequestData) {
+            if (!self.activated || doingRequestData || !enableRequestData) {
                 return;
             }
             doingRequestData = true;
@@ -266,7 +328,7 @@ var Aria2StopedTask = {
 // 主模板
 var aria2_mainTemplate = multiline(function () {/*
 <h1 class="page-header">Aria2下载管理 &nbsp;&nbsp;&nbsp;
-<a class="btn btn-primary" href="#" role="button"><i class="icon-cog"></i> 设置</a>
+<a class="btn btn-primary" href="javascript:C.getModule('aria2').showSetting();" role="button"><i class="icon-cog"></i> 设置</a>
 &nbsp;&nbsp;&nbsp;<small id="version"></small>
 &nbsp;&nbsp;&nbsp;<small id="speed"></small>
 </h1>
@@ -346,3 +408,26 @@ var aria2_stopedTemplate = multiline(function () {/*
     </tbody>
 </table>
 */});
+
+// 设置界面模板
+var aria2_configTemplate = multiline(function () {/*
+<div class="modal-content">
+    <div class="modal-body">
+        <form class="form-horizontal" role="form" method="post">
+            <legend>设置</legend>
+            <div class="form-group">
+                <label class="col-md-3 control-label">Aria2rpc路径:</label>
+                <div id="rpcUrlC" class="col-md-8">
+                    <input type="text" id="rpcUrl" value="{{value}}" class="form-control">
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+        <a class="btn btn-primary" href="javascript:C.getModule('aria2').saveSetting();" role="button">保存</a>
+    </div>
+</div>
+*/});
+
+

@@ -43,11 +43,17 @@ var Net = {
             var err = data1.err;
             if (err != "") {
                 $.zui.messager.show('Error: ' + err, { type: 'danger', time: 2000 });
+                if (module == "aria2" && action == "getStat") {
+                    C.getModule("aria2").getStatErr();
+                }
                 return;
             }
             if (module == "aria2") {
                 var aria2 = C.getModule("aria2");
-                if (action == "getVersion") {
+                if (action == "getConfig" || action == "saveConfig") {
+                    aria2.setConfig(data);
+                }
+                else if (action == "getVersion") {
                     aria2.setVersion(data);
                 }
                 else if (action == "getStat") {

@@ -42,13 +42,50 @@ type Aria2Stat struct {
 	StopedTasks []Aria2Task `json:"stopedTasks"`
 }
 
+// Aria2Config 配置信息
+type Aria2Config struct {
+	// rpc路径
+	URL string `json:"url"`
+}
+
+// 配置文件路径
+var aria2ConfigPath = "config/aria2.json"
+
 // Aria2 与aria2相关的操作
 type Aria2 struct {
-	url     string
+	config  Aria2Config
 	version string
 }
 
 // ===start 交互相关==
+
+// GetConfig 获取配置信息
+func (a *Aria2) GetConfig(sender *Sender) {
+	sender.Data = a.config
+}
+
+// SaveConfig 保存配置信息
+func (a *Aria2) SaveConfig(sender *Sender, data interface{}) {
+	m, ok := data.(map[string]interface{})
+	if !ok {
+		sender.Err = "bad req data"
+		return
+	}
+	urlStr, _ := m["url"].(string)
+	a.config.URL = urlStr
+	b, err := json.Marshal(a.config)
+	if err != nil {
+		sender.Err = err.Error() + " |aria2.go 78"
+		return
+	}
+	err = ioutil.WriteFile(aria2ConfigPath, b, 777)
+	if err != nil {
+		sender.Err = err.Error() + " |aria2.go 83"
+		return
+	}
+	a.version = ""
+	sender.Data = a.config
+}
 
 // GetVersion 获取版本号
 func (a *Aria2) GetVersion(sender *Sender) {
@@ -78,7 +115,7 @@ func (a *Aria2) Start(sender *Sender, data interface{}) {
 		req := a.getJSONRPCRequest()
 		req.Method = "aria2.unpause"
 		req.Params = params
-		lib.CallJSONRPC(a.url, req)
+		lib.CallJSONRPC(a.config.URL, req)
 	}
 }
 
@@ -95,7 +132,7 @@ func (a *Aria2) Pause(sender *Sender, data interface{}) {
 		req := a.getJSONRPCRequest()
 		req.Method = "aria2.pause"
 		req.Params = params
-		lib.CallJSONRPC(a.url, req)
+		lib.CallJSONRPC(a.config.URL, req)
 	}
 }
 
@@ -112,9 +149,9 @@ func (a *Aria2) Remove(sender *Sender, data interface{}) {
 		req := a.getJSONRPCRequest()
 		req.Method = "aria2.forceRemove"
 		req.Params = params
-		lib.CallJSONRPC(a.url, req)
+		lib.CallJSONRPC(a.config.URL, req)
 		req.Method = "aria2.removeDownloadResult"
-		lib.CallJSONRPC(a.url, req)
+		lib.CallJSONRPC(a.config.URL, req)
 	}
 }
 
@@ -124,7 +161,7 @@ func (a *Aria2) StartAll(sender *Sender) {
 	req := a.getJSONRPCRequest()
 	req.Method = "aria2.unpauseAll"
 	req.Params = params
-	lib.CallJSONRPC(a.url, req)
+	lib.CallJSONRPC(a.config.URL, req)
 }
 
 // PauseAll 暂停所有任务
@@ -133,7 +170,7 @@ func (a *Aria2) PauseAll(sender *Sender) {
 	req := a.getJSONRPCRequest()
 	req.Method = "aria2.pauseAll"
 	req.Params = params
-	lib.CallJSONRPC(a.url, req)
+	lib.CallJSONRPC(a.config.URL, req)
 }
 
 // RemoveStoped 删除已停止的某些任务
@@ -149,7 +186,7 @@ func (a *Aria2) RemoveStoped(sender *Sender, data interface{}) {
 		req := a.getJSONRPCRequest()
 		req.Method = "aria2.removeDownloadResult"
 		req.Params = params
-		lib.CallJSONRPC(a.url, req)
+		lib.CallJSONRPC(a.config.URL, req)
 	}
 }
 
@@ -159,7 +196,7 @@ func (a *Aria2) RemoveAllStoped(sender *Sender) {
 	req := a.getJSONRPCRequest()
 	req.Method = "aria2.purgeDownloadResult"
 	req.Params = params
-	lib.CallJSONRPC(a.url, req)
+	lib.CallJSONRPC(a.config.URL, req)
 }
 
 // ===end 交互相关==
@@ -181,7 +218,7 @@ func (a *Aria2) AddDownload(downURL string, filename string, header string) (gid
 	req := a.getJSONRPCRequest()
 	req.Method = "aria2.addUri"
 	req.Params = params
-	res, err := lib.CallJSONRPC(a.url, req)
+	res, err := lib.CallJSONRPC(a.config.URL, req)
 	if err != nil {
 		return
 	}
@@ -200,7 +237,7 @@ func (a *Aria2) getVersion() (version string) {
 	}
 	req := a.getJSONRPCRequest()
 	req.Method = "aria2.getVersion"
-	res, err := lib.CallJSONRPC(a.url, req)
+	res, err := lib.CallJSONRPC(a.config.URL, req)
 	if err != nil || res.Error != nil {
 		return
 	}
@@ -250,7 +287,7 @@ func (a *Aria2) getStat() (stat *Aria2Stat, err error) {
 	req := a.getJSONRPCRequest()
 	req.Method = "system.multicall"
 	req.Params = []interface{}{methodList}
-	res, err := lib.CallJSONRPC(a.url, req)
+	res, err := lib.CallJSONRPC(a.config.URL, req)
 	if err != nil {
 		return
 	}
@@ -332,28 +369,24 @@ func (a *Aria2) getJSONRPCRequest() (req *lib.JSONRPCRequest) {
 }
 
 // loadAria2Config 加载配置文件
-func loadAria2Config() (url string) {
-	b, err := ioutil.ReadFile("config/aria2.json")
+func (a *Aria2) loadAria2Config() {
+	b, err := ioutil.ReadFile(aria2ConfigPath)
 	if err != nil {
+		// 默认的aria2连接地址
+		a.config.URL = "http://localhost:6800/jsonrpc"
 		return
 	}
-	var m map[string]interface{}
-	err = json.Unmarshal(b, &m)
+	err = json.Unmarshal(b, &a.config)
 	if err != nil {
-		return
+		// 默认的aria2连接地址
+		a.config.URL = "http://localhost:6800/jsonrpc"
 	}
-	url, _ = m["url"].(string)
-	return
+	log.Println("aria2 url:", a.config.URL)
 }
 
 // NewAria2 新建
 func NewAria2() (aria2 *Aria2) {
-	url := loadAria2Config()
-	log.Println("aria2 url:", url)
-	if url == "" {
-		// 默认的aria2连接地址
-		url = "http://localhost:6800/jsonrpc"
-	}
-	aria2 = &Aria2{url: url}
+	aria2 = &Aria2{config: Aria2Config{}}
+	aria2.loadAria2Config()
 	return
 }
