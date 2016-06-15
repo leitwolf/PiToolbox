@@ -95,7 +95,12 @@ var Aria2 = {
         };
         // 删除所有
         self.removeAll = function () {
-            C.getModule("net").send("aria2", "remove", activeTask.checkjar.getAllValues());
+            var values = activeTask.checkjar.getAllValues();
+            if (values.length == 0) {
+                $.zui.messager.show('没有进行中的任务！', { type: 'important', time: 2500 });
+                return;
+            }
+            C.getModule("net").send("aria2", "remove", values);
         };
         // 删除已停止的
         self.removeStoped = function () {
@@ -273,12 +278,12 @@ var aria2_mainTemplate = multiline(function () {/*
             <div class="btn-group" role="group">
                 <a class="btn btn-primary" href="javascript:C.getModule('aria2').start();" role="button">开始</a>
                 <a class="btn btn-primary" href="javascript:C.getModule('aria2').pause();" role="button">暂停</a>
-                <a class="btn btn-danger" href="javascript:C.getModule('aria2').remove();" role="button">删除</a>
+                <a class="btn btn-danger" href="javascript:Dialog.deleteConfirm(C.getModule('aria2').remove);" role="button">删除</a>
             </div>
             &nbsp;&nbsp;&nbsp;&nbsp;
             <a class="btn btn-primary" href="javascript:C.getModule('aria2').startAll();" role="button">开始所有</a>
             <a class="btn btn-primary" href="javascript:C.getModule('aria2').pauseAll();" role="button">暂停所有</a>
-            <a class="btn btn-danger" href="javascript:C.getModule('aria2').remove();" role="button">删除所有</a>
+            <a class="btn btn-danger" href="javascript:Dialog.deleteConfirm(C.getModule('aria2').removeAll);" role="button">删除所有</a>
         </div>
         <div id="activeTasks" class="table-responsive">
             {{activeTasks}}

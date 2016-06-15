@@ -89,19 +89,9 @@ var DownBase = {
             }
         }
         // 选择账户
-        self.selectAccount = function (account) {
-            var items = $("li[account]");
-            for (var i = 0; i < items.length; i++) {
-                var item = items[i];
-                if (item.account == account) {
-                    $(item).addClass("active");
-                }
-                else {
-                    $(item).removeClass("active");
-                }
-            }
+        self.selectAccount = function (accountName) {
             var am = self.am;
-            am.selectAccount(account);
+            am.selectAccount(accountName);
             if (am.curAccount != null && am.curAccount.curFile != null && !am.curAccount.curFile.loaded) {
                 // 没有加载过的则加载
                 self.loadData(am.curAccount.curFile.id);
