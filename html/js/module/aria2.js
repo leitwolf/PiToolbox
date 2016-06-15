@@ -83,7 +83,7 @@ var Aria2 = {
                         // 非保存而关闭对话框且之前通信是通的，继续请求数据
                         if (aria2Version != "") {
                             enableRequestData = true;
-                            tickData();
+                            requestData();
                         }
                     }
                 }
@@ -97,7 +97,7 @@ var Aria2 = {
             var url = $("#rpcUrl").val();
             if (url == "") {
                 // 没有填写，红框
-                $("rpcUrlC").addClass("has-error");
+                $("#rpcUrlC").addClass("has-error");
                 return;
             }
             manualCloseDialog = true;
