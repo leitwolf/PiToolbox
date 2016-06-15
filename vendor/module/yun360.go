@@ -38,7 +38,8 @@ func (y3 *Yun360) LoadData(sender *Sender, data interface{}) {
 	}
 	// 路径要urlencode
 	pathStr = url.QueryEscape(pathStr)
-	bodyStr := "type=2&t=0.01148906020119389&order=asc&field=file_name&path=" + pathStr + "&page=0&page_size=300&ajax=1"
+	// 最近上传时间倒序
+	bodyStr := "type=2&t=0.01148906020119389&order=desc&field=server_time&path=" + pathStr + "&page=0&page_size=300&ajax=1"
 	// println("body", bodyStr)
 	body := []byte(bodyStr)
 	req, err := lib.MakeRequest("POST", urlStr, body, cc)
