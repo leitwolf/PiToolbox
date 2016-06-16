@@ -5,8 +5,10 @@ package lib
 //
 import (
 	"bytes"
+	"errors"
 	"io"
 	"net/http"
+	"strconv"
 )
 
 // GetHTML 获取连接响应
@@ -51,6 +53,11 @@ func MakeRequest(method string, urlStr string, body []byte, cc *CookieContainer)
 func FetchHTML(req *http.Request, cc *CookieContainer) (res *http.Response, err error) {
 	client := http.Client{}
 	res, err = client.Do(req)
+	// 如果返回非成功(200)代码，则是错误的
+	if err == nil && res.StatusCode != 200 {
+		err = errors.New("error status code: " + strconv.Itoa(res.StatusCode))
+		return
+	}
 	if cc != nil && err == nil && res.StatusCode == 200 {
 		// 成功的响应，写入cookies
 		cc.Update(res.Cookies())
