@@ -6,6 +6,7 @@ package module
 import (
 	"encoding/json"
 	"io/ioutil"
+	"lib"
 	"log"
 	"net/http"
 	"strconv"
@@ -138,7 +139,7 @@ func saveCookies(sender *Sender, data interface{}) {
 		sender.Err = "bad cookies content"
 		return
 	}
-	err := ioutil.WriteFile("config/"+filename, []byte(content), 777)
+	err := lib.WriteFile("config/"+filename, []byte(content))
 	if err != nil {
 		sender.Err = err.Error()
 		return

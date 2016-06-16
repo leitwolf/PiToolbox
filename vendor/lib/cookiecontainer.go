@@ -6,6 +6,7 @@ package lib
 import (
 	"encoding/json"
 	"io/ioutil"
+	"lib"
 	"net/http"
 )
 
@@ -64,7 +65,7 @@ func (cc *CookieContainer) Update(cookies []*http.Cookie) {
 	b, err := json.Marshal(cc.cookies)
 	if err == nil {
 		// println("write cookies")
-		ioutil.WriteFile(cc.filepath, b, 777)
+		lib.WriteFile(cc.filepath, b)
 	}
 }
 

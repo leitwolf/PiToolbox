@@ -6,9 +6,26 @@ package lib
 import (
 	"io/ioutil"
 	"log"
+	"os"
+	"path"
 	"strconv"
 	"strings"
 )
+
+// WriteFile 保存文件，可自动建文件夹
+func WriteFile(filename string, data []byte) (err error) {
+	dirStr := path.Dir(filename)
+	_, err = os.Stat(dirStr)
+	b := os.IsNotExist(err)
+	if b {
+		err = os.MkdirAll(dirStr, 777)
+		if err != nil {
+			return
+		}
+	}
+	err = ioutil.WriteFile(filename, data, 777)
+	return
+}
 
 const gnumber float32 = 1024 * 1024 * 1024
 const mnumber float32 = 1024 * 1024

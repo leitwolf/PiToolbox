@@ -56,7 +56,7 @@ func (xf *Xuanfeng) LoadData(sender *Sender, data interface{}) {
 	err = json.Unmarshal(b, &jsonData)
 	if err != nil {
 		// test
-		ioutil.WriteFile("test/xf1.json", b, 777)
+		lib.WriteFile("test/xf1.json", b)
 		sender.Err = err.Error() + " | xuanfeng:59"
 		return
 	}

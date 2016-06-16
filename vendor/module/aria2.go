@@ -78,7 +78,7 @@ func (a *Aria2) SaveConfig(sender *Sender, data interface{}) {
 		sender.Err = err.Error() + " |aria2.go 78"
 		return
 	}
-	err = ioutil.WriteFile(aria2ConfigPath, b, 777)
+	err = lib.WriteFile(aria2ConfigPath, b)
 	if err != nil {
 		sender.Err = err.Error() + " |aria2.go 83"
 		return
@@ -374,12 +374,12 @@ func (a *Aria2) loadAria2Config() {
 	if err != nil {
 		// 默认的aria2连接地址
 		a.config.URL = "http://localhost:6800/jsonrpc"
-		return
-	}
-	err = json.Unmarshal(b, &a.config)
-	if err != nil {
-		// 默认的aria2连接地址
-		a.config.URL = "http://localhost:6800/jsonrpc"
+	} else {
+		err = json.Unmarshal(b, &a.config)
+		if err != nil {
+			// 默认的aria2连接地址
+			a.config.URL = "http://localhost:6800/jsonrpc"
+		}
 	}
 	log.Println("aria2 url:", a.config.URL)
 }

@@ -37,20 +37,7 @@ var port = 5000
 // 	println(content)
 // }
 // func test2() {
-// 	b, err := ioutil.ReadFile("test/xf2.json")
-// 	if err != nil {
-// 		println(err.Error())
-// 		return
-// 	}
-
-// 	var jsonData map[string]interface{}
-// 	err = json.Unmarshal(b[3:], &jsonData)
-// 	if err != nil {
-// 		println(string(b[1:]))
-// 		println(err.Error())
-// 		return
-// 	}
-// 	println("ok")
+// 	lib.WriteFile("aa/bb/cc.txt", []byte("aaa"))
 // }
 
 func main() {

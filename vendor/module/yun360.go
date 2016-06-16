@@ -65,7 +65,7 @@ func (y3 *Yun360) LoadData(sender *Sender, data interface{}) {
 	// 转成json格式
 	jsonStr := y3.transJSON(content)
 	// test
-	// ioutil.WriteFile("test/3601.json", []byte(jsonStr), 777)
+	// lib.WriteFile("test/3601.json", []byte(jsonStr))
 	var jsonData map[string]interface{}
 	err = json.Unmarshal([]byte(jsonStr), &jsonData)
 	if err != nil {
