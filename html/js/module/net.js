@@ -62,7 +62,7 @@ var Net = {
                 else {
                     aria2.refresh();
                 }
-            } else if (module == "xunlei" || module == "yun360") {
+            } else if (module == "xunlei" || module == "yun360" || module == "xuanfeng") {
                 // 各个下载页面的调用都一样
                 var downPage = C.getModule(module);
                 if (action == "getAccountList") {

@@ -68,6 +68,16 @@ func (cc *CookieContainer) Update(cookies []*http.Cookie) {
 	}
 }
 
+// UpdateValue 更新字段值
+func (cc *CookieContainer) UpdateValue(name string, value string) {
+	for i := 0; i < len(cc.cookies); i++ {
+		if cc.cookies[i].Name == name {
+			cc.cookies[i].Value = value
+			return
+		}
+	}
+}
+
 // GetValueByName 查找指定Name的cookie的值
 func (cc *CookieContainer) GetValueByName(name string) (value string) {
 	for _, cookie := range cc.cookies {

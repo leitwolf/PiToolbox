@@ -109,6 +109,14 @@ func actionDispatch(m string, a string, data interface{}, sender *Sender) {
 		} else if a == "download" {
 			C.Yun360.Download(sender, data)
 		}
+	} else if m == "xuanfeng" {
+		if a == "getAccountList" {
+			C.Xuanfeng.GetAccountList(sender)
+		} else if a == "loadData" {
+			C.Xuanfeng.LoadData(sender, data)
+		} else if a == "download" {
+			C.Xuanfeng.Download(sender, data)
+		}
 	} else if m == "cookies" {
 		if a == "save" {
 			// 保存cookies

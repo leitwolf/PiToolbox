@@ -11,6 +11,8 @@ function init() {
     C.registerModule("xunlei", xunlei);
     var yun360 = Yun360.createNew();
     C.registerModule("yun360", yun360);
+    var xuanfeng = Xuanfeng.createNew();
+    C.registerModule("xuanfeng", xuanfeng);
 
     var q = document.location.search;
     if (q == "?xunlei") {
@@ -18,6 +20,9 @@ function init() {
     }
     else if (q == "?yun360") {
         sidebar.loadItem("yun360");
+    }
+    else if (q == "?xuanfeng") {
+        sidebar.loadItem("xuanfeng");
     }
     else {
         sidebar.loadItem("aria2");

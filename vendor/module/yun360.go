@@ -65,7 +65,7 @@ func (y3 *Yun360) LoadData(sender *Sender, data interface{}) {
 	// 转成json格式
 	jsonStr := y3.transJSON(content)
 	// test
-	ioutil.WriteFile("test/3601.json", []byte(jsonStr), 777)
+	// ioutil.WriteFile("test/3601.json", []byte(jsonStr), 777)
 	var jsonData map[string]interface{}
 	err = json.Unmarshal([]byte(jsonStr), &jsonData)
 	if err != nil {
@@ -89,8 +89,8 @@ func (y3 *Yun360) LoadData(sender *Sender, data interface{}) {
 	resultList := []interface{}{}
 	for i := 0; i < l; i++ {
 		obj, _ := datas[i].(map[string]interface{})
-		id := obj["nid"]
-		if id == nil {
+		id1 := obj["nid"]
+		if id1 == nil {
 			continue
 		}
 		title := obj["oriName"]
@@ -104,7 +104,7 @@ func (y3 *Yun360) LoadData(sender *Sender, data interface{}) {
 			size = lib.GetReadableSize(size) + "B"
 		}
 		pathStr := obj["path"]
-		resultList = append(resultList, map[string]interface{}{"id": id, "title": title, "size": size, "path": pathStr, "isdir": isdir})
+		resultList = append(resultList, map[string]interface{}{"id": id1, "title": title, "size": size, "path": pathStr, "isdir": isdir})
 	}
 	sender.Data = map[string]interface{}{"account": accountName, "id": id, "list": resultList}
 }

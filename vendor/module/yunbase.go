@@ -16,7 +16,7 @@ type YunBase struct {
 // GetAccountList 获取账户列表
 // 返回 [Account.Name] 列表
 func (base *YunBase) GetAccountList(sender *Sender) {
-	println("account", base.accountType)
+	// println("account", base.accountType)
 	list, err := lib.LoadAccountList(base.accountType)
 	if err != nil {
 		sender.Err = err.Error()
