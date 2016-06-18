@@ -115,6 +115,7 @@ var DownBase = {
         // 排列数组
         // @param sortType "asc" "desc" ""
         self.sortTable = function (sortType) {
+            $('[data-toggle="tooltip"]').tooltip('destroy');
             FilesTable.setSort(sortType);
             self.fillHtml();
         }
