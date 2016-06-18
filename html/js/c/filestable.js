@@ -73,9 +73,9 @@ var FilesTable = {
                 }
                 // 排序图标
                 var sortFunc = "C.getModule(\'" + className + "\').sortTable";
-                var normal = '&nbsp;&nbsp;&nbsp;<a href="javascript:' + sortFunc + '(\'\');" data-toggle="tooltip" data-placement="top" data-container="body" title="原始排列"><i class="icon icon-align-justify"></i></a>';
-                var asc = '&nbsp;&nbsp;&nbsp;<a href="javascript:' + sortFunc + '(\'asc\');" data-toggle="tooltip" data-placement="top" data-container="body" title="升序排列"><i class="icon icon-circle-arrow-up"></i></a>';
-                var desc = '&nbsp;&nbsp;&nbsp;<a href="javascript:' + sortFunc + '(\'desc\');" data-toggle="tooltip" data-placement="top" data-container="body" title="降序排列"><i class="icon icon-circle-arrow-down"></i></a>';
+                var normal = '&nbsp;&nbsp;&nbsp;<a href="javascript:' + sortFunc + '(\'\');" data-toggle="tooltip_sort" data-placement="top" data-trigger="hover" data-container="body" title="原始排列"><i class="icon icon-align-justify"></i></a>';
+                var asc = '&nbsp;&nbsp;&nbsp;<a href="javascript:' + sortFunc + '(\'asc\');" data-toggle="tooltip_sort" data-placement="top" data-trigger="hover" data-container="body" title="升序排列"><i class="icon icon-circle-arrow-up"></i></a>';
+                var desc = '&nbsp;&nbsp;&nbsp;<a href="javascript:' + sortFunc + '(\'desc\');" data-toggle="tooltip_sort" data-placement="top" data-trigger="hover" data-container="body" title="降序排列"><i class="icon icon-circle-arrow-down"></i></a>';
                 if (tableSort == "asc") {
                     asc = '&nbsp;&nbsp;&nbsp;<i class="icon icon-circle-arrow-up"></i>';
                 }

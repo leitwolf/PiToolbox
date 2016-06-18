@@ -115,7 +115,8 @@ var DownBase = {
         // 排列数组
         // @param sortType "asc" "desc" ""
         self.sortTable = function (sortType) {
-            $('[data-toggle="tooltip"]').tooltip('destroy');
+            // 先删除之前的点击时的tooltip
+            $('.tooltip').remove();
             FilesTable.setSort(sortType);
             self.fillHtml();
         }
@@ -252,7 +253,7 @@ var DownBase = {
             self.filesTable.setData(am.getShowList());
 
             Helper.activateiCheck();
-            $('[data-toggle="tooltip"]').tooltip();
+            $('[data-toggle="tooltip_sort"]').tooltip();
             // 不选择
             self.checkjar.values = [];
             self.checkjar.init();
