@@ -89,7 +89,6 @@ var FilesTable = {
             }
             $("#filelist").html(str);
             $("#table_sort").html(sortStr);
-            $('[data-toggle="tooltip"]').tooltip();
         }
 
         return self;

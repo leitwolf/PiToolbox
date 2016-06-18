@@ -252,6 +252,7 @@ var DownBase = {
             self.filesTable.setData(am.getShowList());
 
             Helper.activateiCheck();
+            $('[data-toggle="tooltip"]').tooltip();
             // 不选择
             self.checkjar.values = [];
             self.checkjar.init();
