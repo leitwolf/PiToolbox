@@ -48,8 +48,8 @@ func (y3 *Yun360) LoadData(sender *Sender, data interface{}) {
 		return
 	}
 	// ***必须加***
-	req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
-	req.Header.Add("Referer", "http://c69.yunpan.360.cn/my")
+	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+	req.Header.Set("Referer", "http://c69.yunpan.360.cn/my")
 	res, err := lib.FetchHTML(req, cc)
 	if err != nil {
 		sender.Err = err.Error() + " | yun360:54"
@@ -172,8 +172,8 @@ func (y3 *Yun360) getDownURL(id string, pathStr string, cc *lib.CookieContainer)
 		return
 	}
 	// ***必须加***
-	req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
-	req.Header.Add("Referer", "http://c69.yunpan.360.cn/my")
+	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+	req.Header.Set("Referer", "http://c69.yunpan.360.cn/my")
 	res, err := lib.FetchHTML(req, cc)
 	if err != nil {
 		return

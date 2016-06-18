@@ -42,7 +42,7 @@ func MakeRequest(method string, urlStr string, body []byte, cc *CookieContainer)
 	if err != nil {
 		return
 	}
-	req.Header.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.84 Safari/537.36")
+	req.Header.Set("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.84 Safari/537.36")
 	if cc != nil {
 		cc.AddToReqeust(req)
 	}

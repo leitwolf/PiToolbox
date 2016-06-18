@@ -1,6 +1,7 @@
 // 初始化
 function init() {
     theme_init();
+    FilesTable.init();
     var sidebar = Sidebar.createNew();
     C.registerModule("sidebar", sidebar);
     var net = Net.createNew();

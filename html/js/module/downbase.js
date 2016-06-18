@@ -11,7 +11,7 @@ var DownBase = {
         // checkbox管理
         self.checkjar = Checkjar.createNew("files");
         // 文件树表格管理
-        self.filesTable = FilesTable.createNew("C.getModule(\'" + self.className + "\').enterDir");
+        self.filesTable = FilesTable.createNew(self.className);
         // 账户管理
         self.am = AccountsManager.createNew();
         // 初始化
@@ -111,6 +111,12 @@ var DownBase = {
             else {
                 self.fillHtml();
             }
+        }
+        // 排列数组
+        // @param sortType "asc" "desc" ""
+        self.sortTable = function (sortType) {
+            FilesTable.setSort(sortType);
+            self.fillHtml();
         }
         // 加载数据,***由子类重写***
         self.loadData = function (id) {

@@ -19,9 +19,9 @@ var port = 5000
 // 		println(err.Error())
 // 		return
 // 	}
-// 	req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
-// 	// req.Header.Add("Content-Length", strconv.Itoa(len(str)))
-// 	req.Header.Add("Referer", "http://lixian.qq.com/main.html")
+// 	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+// 	// req.Header.Set("Content-Length", strconv.Itoa(len(str)))
+// 	req.Header.Set("Referer", "http://lixian.qq.com/main.html")
 // 	res, err := lib.FetchHTML(req, cc)
 // 	if err != nil {
 // 		println(err.Error())

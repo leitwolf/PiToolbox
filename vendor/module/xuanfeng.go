@@ -38,8 +38,8 @@ func (xf *Xuanfeng) LoadData(sender *Sender, data interface{}) {
 		return
 	}
 	// ***必须加***
-	req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
-	req.Header.Add("Referer", "http://lixian.qq.com/main.html")
+	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+	req.Header.Set("Referer", "http://lixian.qq.com/main.html")
 	res, err := lib.FetchHTML(req, cc)
 	if err != nil {
 		sender.Err = err.Error() + " | xuanfeng:44"
@@ -159,8 +159,8 @@ func (xf *Xuanfeng) getDownURL(id string, title string, cc *lib.CookieContainer)
 		return
 	}
 	// ***必须加***
-	req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
-	req.Header.Add("Referer", "http://lixian.qq.com/main.html")
+	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+	req.Header.Set("Referer", "http://lixian.qq.com/main.html")
 	res, err := lib.FetchHTML(req, cc)
 	if err != nil {
 		println(err.Error() + " xuanfeng 166")
