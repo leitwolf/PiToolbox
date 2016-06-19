@@ -18,12 +18,12 @@ func WriteFile(filename string, data []byte) (err error) {
 	_, err = os.Stat(dirStr)
 	b := os.IsNotExist(err)
 	if b {
-		err = os.MkdirAll(dirStr, 777)
+		err = os.MkdirAll(dirStr, 0777)
 		if err != nil {
 			return
 		}
 	}
-	err = ioutil.WriteFile(filename, data, 777)
+	err = ioutil.WriteFile(filename, data, 0777)
 	return
 }
 

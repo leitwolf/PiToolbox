@@ -42,7 +42,7 @@ func reqHandler(res http.ResponseWriter, req *http.Request) {
 		res.Write([]byte("bad request body"))
 		return
 	}
-	log.Println("receive: ", string(content))
+	// log.Println("receive: ", string(content))
 	var receiver Receiver
 	err = json.Unmarshal(content, &receiver)
 	if err != nil {
