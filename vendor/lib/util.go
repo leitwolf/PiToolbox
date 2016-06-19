@@ -27,26 +27,26 @@ func WriteFile(filename string, data []byte) (err error) {
 	return
 }
 
-const gnumber float32 = 1024 * 1024 * 1024
-const mnumber float32 = 1024 * 1024
-const knumber float32 = 1024
+const gnumber float64 = 1024 * 1024 * 1024
+const mnumber float64 = 1024 * 1024
+const knumber float64 = 1024
 
 // GetReadableSize 把容量转成可读性比较高的方式 以K M G形式
 func GetReadableSize(origin string) (readable string) {
-	nn, err := strconv.Atoi(origin)
+	nn, err := strconv.ParseInt(origin, 10, 64)
 	if err != nil {
 		return
 	}
-	n := float32(nn)
+	n := float64(nn)
 	if n >= gnumber {
 		r := n / gnumber
-		readable = strconv.FormatFloat(float64(r), 'f', 2, 32) + "G"
+		readable = strconv.FormatFloat(float64(r), 'f', 2, 64) + "G"
 	} else if n >= mnumber {
 		r := n / mnumber
-		readable = strconv.FormatFloat(float64(r), 'f', 2, 32) + "M"
+		readable = strconv.FormatFloat(float64(r), 'f', 2, 64) + "M"
 	} else if n >= knumber {
 		r := n / knumber
-		readable = strconv.FormatFloat(float64(r), 'f', 2, 32) + "K"
+		readable = strconv.FormatFloat(float64(r), 'f', 2, 64) + "K"
 	} else {
 		readable = origin
 	}
@@ -87,7 +87,7 @@ func LoadAccountList(accountType string) (accountList []Account, err error) {
 			if accountName == "" {
 				accountName = "empty"
 			}
-			println("accountName", accountName)
+			// println("accountName", accountName)
 			path := "config/" + name
 			cc, err1 := NewCookieContainer(path)
 			if err1 != nil {

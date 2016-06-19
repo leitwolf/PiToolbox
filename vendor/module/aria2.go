@@ -21,12 +21,12 @@ type Aria2Task struct {
 	// 状态 active waiting paused error complete removed
 	Status string `json:"status"`
 	// 总大小
-	Size int `json:"size"`
+	Size int64 `json:"size"`
 	// 已完成大小
-	CompletedLength int `json:"completedLength"`
+	CompletedLength int64 `json:"completedLength"`
 	// 进度0-100
-	Progress float32 `json:"progress"`
-	Speed    int     `json:"speed"`
+	Progress float64 `json:"progress"`
+	Speed    int64   `json:"speed"`
 	// 与服务器连接数
 	Connections string `json:"connections"`
 }
@@ -317,17 +317,17 @@ func (a *Aria2) analyseTasks(data interface{}) (tasks []Aria2Task) {
 		task.GID = m["gid"].(string)
 		task.Status = m["status"].(string)
 		totalLength := m["totalLength"].(string)
-		task.Size, _ = strconv.Atoi(totalLength)
+		task.Size, _ = strconv.ParseInt(totalLength, 10, 64)
 		completedLength := m["completedLength"].(string)
-		task.CompletedLength, _ = strconv.Atoi(completedLength)
+		task.CompletedLength, _ = strconv.ParseInt(completedLength, 10, 64)
 		// 完成百分比
 		if task.Size > 0 {
-			p := float32(task.CompletedLength) * 100.0 / float32(task.Size)
-			progress, _ := strconv.ParseFloat(strconv.FormatFloat(float64(p), 'f', 2, 32), 32)
-			task.Progress = float32(progress)
+			p := float64(task.CompletedLength) * 100.0 / float64(task.Size)
+			progress, _ := strconv.ParseFloat(strconv.FormatFloat(p, 'f', 2, 64), 64)
+			task.Progress = progress
 		}
 		speed := m["downloadSpeed"].(string)
-		task.Speed, _ = strconv.Atoi(speed)
+		task.Speed, _ = strconv.ParseInt(speed, 10, 64)
 		task.Connections, _ = m["connections"].(string)
 		// 文件名从files中取，只取第一个，去掉路径
 		files := m["files"].([]interface{})

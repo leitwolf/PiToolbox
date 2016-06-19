@@ -89,7 +89,7 @@ func (xf *Xuanfeng) LoadData(sender *Sender, data interface{}) {
 		id1 := obj["hash"]
 		title := obj["file_name"]
 		size1, _ := obj["file_size"].(float64)
-		size := strconv.Itoa(int(size1))
+		size := strconv.FormatInt(int64(size1), 10)
 		size = lib.GetReadableSize(size) + "B"
 		resultList = append(resultList, map[string]interface{}{"id": id1, "title": title, "size": size})
 	}
