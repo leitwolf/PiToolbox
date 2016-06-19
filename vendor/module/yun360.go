@@ -259,5 +259,6 @@ func (y3 *Yun360) handleDot(str string, start int) (newStr string) {
 // NewYun360 新建
 func NewYun360() (yun360 *Yun360) {
 	yun360 = &Yun360{YunBase{accountType: "yun360", accountList: []lib.Account{}}}
+	yun360.initAccountList()
 	return
 }

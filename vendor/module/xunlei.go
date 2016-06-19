@@ -230,5 +230,6 @@ func (xl *Xunlei) getBt(cc *lib.CookieContainer, taskID string) (resultList []in
 // NewXunlei 新建
 func NewXunlei() (xunlei *Xunlei) {
 	xunlei = &Xunlei{YunBase{accountType: "xunlei", accountList: []lib.Account{}}}
+	xunlei.initAccountList()
 	return
 }

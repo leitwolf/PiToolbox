@@ -40,3 +40,11 @@ func (base *YunBase) getCookieContainer(accountName string) (cc *lib.CookieConta
 	}
 	return
 }
+// 初始化账户列表
+func (base *YunBase) initAccountList() {
+	list, err := lib.LoadAccountList(base.accountType)
+	if err != nil {
+		return
+	}
+	base.accountList = list
+}

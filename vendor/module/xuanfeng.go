@@ -203,5 +203,6 @@ func (xf *Xuanfeng) getDownURL(id string, title string, cc *lib.CookieContainer)
 // NewXuanfeng 新建
 func NewXuanfeng() (xf *Xuanfeng) {
 	xf = &Xuanfeng{YunBase{accountType: "xuanfeng", accountList: []lib.Account{}}}
+	xf.initAccountList()
 	return
 }
