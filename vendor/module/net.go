@@ -7,9 +7,7 @@ import (
 	"encoding/json"
 	"io/ioutil"
 	"lib"
-	"log"
 	"net/http"
-	"strconv"
 )
 
 // Receiver 客户端发来的请求信息
@@ -34,8 +32,8 @@ type Sender struct {
 	Err string `json:"err"`
 }
 
-// reqHandler 客户端请求处理
-func reqHandler(res http.ResponseWriter, req *http.Request) {
+// ReqHandler 客户端请求处理
+func ReqHandler(res http.ResponseWriter, req *http.Request) {
 	// defer req.Body.Close()
 	content, err := ioutil.ReadAll(req.Body)
 	if err != nil {
@@ -147,18 +145,4 @@ func saveCookies(sender *Sender, data interface{}) {
 	// 当前页面
 	page, _ := data2["page"].(string)
 	sender.Data = page
-}
-
-// StartServer 开启web服务
-func StartServer(port int) {
-	addr := ":" + strconv.Itoa(port)
-	log.Println("Listening on port: " + strconv.Itoa(port))
-	// 静态文件
-	http.Handle("/", http.FileServer(http.Dir("./html")))
-	// 客户端处理操作
-	http.HandleFunc("/action", reqHandler)
-	err := http.ListenAndServe(addr, nil)
-	if err != nil {
-		log.Fatal("ListenAndServe:", err)
-	}
 }
