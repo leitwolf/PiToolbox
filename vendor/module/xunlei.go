@@ -10,6 +10,7 @@ import (
 	"lib"
 	"strconv"
 	"strings"
+	"time"
 )
 
 // Xunlei 迅雷离线下载
@@ -98,7 +99,9 @@ func (xl *Xunlei) Download(sender *Sender, data interface{}) {
 // getMainList 获取主页面列表信息
 // @return 返回 [{id,title,size,url,isdir}]
 func (xl *Xunlei) getMainList(cc *lib.CookieContainer) (resultList []interface{}, err error) {
-	callback := "jsonp1465702254496"
+	// 需要随机
+	ran := strconv.FormatInt(time.Now().UnixNano(), 10)
+	callback := "jsonp" + ran
 	urlStr := "http://dynamic.cloud.vip.xunlei.com/interface/showtask_unfresh?callback=" + callback + "&type_id=4&page=1&tasknum=300&p=1&interfrom=task"
 	res, err := lib.GetHTML(urlStr, cc)
 	if err != nil {
