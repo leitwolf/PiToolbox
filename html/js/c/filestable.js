@@ -85,7 +85,8 @@ var FilesTable = {
                 else {
                     normal = '&nbsp;&nbsp;&nbsp;<i class="icon icon-align-justify"></i>';
                 }
-                sortStr = normal + asc + desc;
+                var itemStr='&nbsp;&nbsp;&nbsp;<span class="label label-success">'+newList.length+"</span>";
+                sortStr = normal + asc + desc+itemStr;
             }
             $("#filelist").html(str);
             $("#table_sort").html(sortStr);

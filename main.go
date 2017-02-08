@@ -5,7 +5,8 @@ import (
 	"module"
 	"net/http"
 	"strconv"
-	// "github.com/VividCortex/godaemon"
+
+	"github.com/VividCortex/godaemon"
 )
 
 // 监听的端口
@@ -16,8 +17,8 @@ func startServer(port int) {
 	addr := ":" + strconv.Itoa(port)
 	log.Println("Listening on port: " + strconv.Itoa(port))
 	// 静态文件
-	http.Handle("/", http.FileServer(http.Dir("html")))
-	// http.Handle("/", http.FileServer(FS(false)))
+	// http.Handle("/", http.FileServer(http.Dir("html")))
+	http.Handle("/", http.FileServer(FS(false)))
 	// 客户端处理操作
 	http.HandleFunc("/action", module.ReqHandler)
 	err := http.ListenAndServe(addr, nil)
@@ -27,7 +28,7 @@ func startServer(port int) {
 }
 
 func main() {
-	// godaemon.MakeDaemon(&godaemon.DaemonAttr{})
+	godaemon.MakeDaemon(&godaemon.DaemonAttr{})
 	module.Init()
 	startServer(port)
 }
