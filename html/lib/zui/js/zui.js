@@ -1,17 +1,17 @@
 /*!
- * ZUI - v1.4.0 - 2016-01-26
+ * ZUI: Standard edition - v1.5.0 - 2016-09-06
  * http://zui.sexy
  * GitHub: https://github.com/easysoft/zui.git 
  * Copyright (c) 2016 cnezsoft.com; Licensed MIT
  */
 
-/* Some code copy from Bootstrap v3.0.0 by @fat and @mdo. (Copyright 2013 Twitter, Inc. Licensed under http://www.apache.org/licenses/)*/
+/*! Some code copy from Bootstrap v3.0.0 by @fat and @mdo. (Copyright 2013 Twitter, Inc. Licensed under http://www.apache.org/licenses/)*/
 
 /* ========================================================================
  * ZUI: jquery.extensions.js
  * http://zui.sexy
  * ========================================================================
- * Copyright (c) 2014 cnezsoft.com; Licensed MIT
+ * Copyright (c) 2014-2016 cnezsoft.com; Licensed MIT
  * ======================================================================== */
 
 
@@ -62,13 +62,8 @@
     $.fn.callEvent = function(name, event, model) {
         var $this = $(this);
         var dotIndex = name.indexOf('.zui.');
-        var shortName = name;
-        if(dotIndex < 0 && model && model.name) {
-            name += '.' + model.name;
-        } else {
-            shortName = name.substring(0, dotIndex);
-        }
-        var e = $.Event(name, event);
+        var shortName = dotIndex < 0 ? name : name.substring(0, dotIndex);
+        var e = $.Event(shortName, event);
 
         if((model === undefined) && dotIndex > 0) {
             model = $this.data(name.substring(dotIndex + 1));
@@ -77,9 +72,10 @@
         if(model && model.options) {
             var func = model.options[shortName];
             if($.isFunction(func)) {
-                $.zui.callEvent(model.options[shortName], e, model);
+                $.zui.callEvent(func, e, model);
             }
         }
+        $this.trigger(e);
         return e;
     };
 }(jQuery, window));
@@ -88,6 +84,10 @@
 /* ========================================================================
  * Bootstrap: button.js v3.0.3
  * http://getbootstrap.com/javascript/#buttons
+ * 
+ * ZUI: The file has been changed in ZUI. It will not keep update with the
+ * Bootsrap version in the future.
+ * http://zui.sexy
  * ========================================================================
  * Copyright 2011-2014 Twitter, Inc.
  * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
@@ -211,6 +211,10 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
+ * ZUI: The file has been changed in ZUI. It will not keep update with the
+ * Bootsrap version in the future.
+ * http://zui.sexy
  * ======================================================================== */
 
 
@@ -296,10 +300,13 @@
 
 }(window.jQuery);
 
-
 /* ========================================================================
  * Bootstrap: tab.js v3.0.0
  * http://twbs.github.com/bootstrap/javascript.html#tabs
+ *  
+ * ZUI: The file has been changed in ZUI. It will not keep update with the
+ * Bootsrap version in the future.
+ * http://zui.sexy
  * ========================================================================
  * Copyright 2012 Twitter, Inc.
  *
@@ -331,7 +338,7 @@
     Tab.prototype.show = function() {
         var $this = this.element
         var $ul = $this.closest('ul:not(.dropdown-menu)')
-        var selector = $this.attr('data-target')
+        var selector = $this.attr('data-target') || $this.attr('data-tab')
 
         if(!selector) {
             selector = $this.attr('href')
@@ -426,7 +433,7 @@
     // TAB DATA-API
     // ============
 
-    $(document).on('click.zui.tab.data-api', '[data-toggle="tab"], [data-toggle="pill"]', function(e) {
+    $(document).on('click.zui.tab.data-api', '[data-toggle="tab"], [data-tab]', function(e) {
         e.preventDefault()
         $(this).tab('show')
     })
@@ -437,6 +444,10 @@
 /* ========================================================================
  * Bootstrap: transition.js v3.2.0
  * http://getbootstrap.com/javascript/#transitions
+ *  
+ * ZUI: The file has been changed in ZUI. It will not keep update with the
+ * Bootsrap version in the future.
+ * http://zui.sexy
  * ========================================================================
  * Copyright 2011-2014 Twitter, Inc.
  * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
@@ -504,6 +515,10 @@
 /* ========================================================================
  * Bootstrap: collapse.js v3.0.0
  * http://twbs.github.com/bootstrap/javascript.html#collapse
+ * 
+ * ZUI: The file has been changed in ZUI. It will not keep update with the
+ * Bootsrap version in the future.
+ * http://zui.sexy
  * ========================================================================
  * Copyright 2012 Twitter, Inc.
  *
@@ -554,7 +569,7 @@
         this.$element.trigger(startEvent)
         if(startEvent.isDefaultPrevented()) return
 
-        var actives = this.$parent && this.$parent.find('> .panel > .in')
+        var actives = this.$parent && this.$parent.find('.in')
 
         if(actives && actives.length) {
             var hasData = actives.data(zuiname)
@@ -682,7 +697,7 @@
  * ZUI: device.js
  * http://zui.sexy
  * ========================================================================
- * Copyright (c) 2014 cnezsoft.com; Licensed MIT
+ * Copyright (c) 2014-2016 cnezsoft.com; Licensed MIT
  * ======================================================================== */
 
 
@@ -697,7 +712,8 @@
             tablet: 'screen-tablet',
             phone: 'screen-phone',
             isMobile: 'device-mobile',
-            isDesktop: 'device-desktop'
+            isDesktop: 'device-desktop',
+            touch: 'is-touchable'
         };
 
     var $window = $(window);
@@ -709,6 +725,7 @@
             .toggleClass(cssNames.tablet, width >= tablet && width < desktop)
             .toggleClass(cssNames.phone, width < tablet)
             .toggleClass(cssNames.isMobile, width < desktop)
+            .toggleClass(cssNames.touch, 'ontouchstart' in document.documentElement)
             .toggleClass(cssNames.isDesktop, width >= desktop);
     };
 
@@ -808,6 +825,7 @@
 
 /* ========================================================================
  * ZUI: date.js
+ * Date polyfills
  * http://zui.sexy
  * ========================================================================
  * Copyright (c) 2014 cnezsoft.com; Licensed MIT
@@ -1025,31 +1043,37 @@
 
 /* ========================================================================
  * ZUI: string.js
+ * String Polyfill.
  * http://zui.sexy
  * ========================================================================
- * Copyright (c) 2014 cnezsoft.com; Licensed MIT
+ * Copyright (c) 2014-2016 cnezsoft.com; Licensed MIT
  * ======================================================================== */
 
 
 (function() {
     'use strict';
 
+    /**
+     * Format string with argument list or object
+     * @param  {object | arguments} args
+     * @return {String}
+     */
     if(!String.prototype.format) {
         String.prototype.format = function(args) {
             var result = this;
             if(arguments.length > 0) {
                 var reg;
-                if(arguments.length == 1 && typeof(args) == "object") {
+                if(arguments.length <= 2 && typeof(args) == 'object') {
                     for(var key in args) {
                         if(args[key] !== undefined) {
-                            reg = new RegExp("({" + key + "})", "g");
+                            reg = new RegExp('(' + (arguments[1] ? arguments[1].replace('0', key) : '{' + key + '}') + ')', 'g');
                             result = result.replace(reg, args[key]);
                         }
                     }
                 } else {
                     for(var i = 0; i < arguments.length; i++) {
                         if(arguments[i] !== undefined) {
-                            reg = new RegExp("({[" + i + "]})", "g");
+                            reg = new RegExp('({[' + i + ']})', 'g');
                             result = result.replace(reg, arguments[i]);
                         }
                     }
@@ -1080,13 +1104,25 @@
 })();
 
 
-/*!
- * jQuery resize event - v1.1 - 3/14/2010
+/* ========================================================================
+ * Resize: resize.js [Version: 1.1]
  * http://benalman.com/projects/jquery-resize-plugin/
- *
- * Copyright (c) 2010 "Cowboy" Ben Alman
+ *  
+ * ZUI: The file has been changed in ZUI. It will not keep update with the
+ * official version in the future.
+ * http://zui.sexy
+ * ========================================================================
+ * opyright (c) 2010 "Cowboy" Ben Alman
  * Dual licensed under the MIT and GPL licenses.
  * http://benalman.com/about/license/
+ * ======================================================================== */
+
+
+/*!
+ * jQuery resize event - v1.1
+ * http://benalman.com/projects/jquery-resize-plugin/
+ * Copyright (c) 2010 "Cowboy" Ben Alman
+ * MIT & GPL http://benalman.com/about/license/
  */
 
 // Script: jQuery resize event
@@ -1340,6 +1376,10 @@
 /* ========================================================================
  * Bootstrap: scrollspy.js v3.0.3
  * http://getbootstrap.com/javascript/#scrollspy
+ *  
+ * ZUI: The file has been changed in ZUI. It will not keep update with the
+ * Bootsrap version in the future.
+ * http://zui.sexy
  * ========================================================================
  * Copyright 2011-2014 Twitter, Inc.
  * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
@@ -1495,7 +1535,7 @@
  * ZUI: storeb.js
  * http://zui.sexy
  * ========================================================================
- * Copyright (c) 2014 cnezsoft.com; Licensed MIT
+ * Copyright (c) 2014-2016 cnezsoft.com; Licensed MIT
  * ======================================================================== */
 
 
@@ -1503,16 +1543,55 @@
     'use strict';
 
     var lsName = 'localStorage';
-    var storage = window[lsName],
-        old = window.store,
+    var storage,
+        dataset,
         pageName = 'page_' + window.location.pathname + window.location.search;
 
     /* The Store object */
     var Store = function() {
         this.slience = true;
-        this.enable = (lsName in window) && window[lsName] && window[lsName].setItem;
+        try {
+            if((lsName in window) && window[lsName] && window[lsName].setItem) {
+                this.enable = true;
+                storage = window[lsName];
+            }
+        } catch(e){}
+        if(!this.enable) {
+            dataset = {};
+            storage = {
+                getLength: function() {
+                    var length = 0;
+                    $.each(dataset, function() {
+                        length++;
+                    });
+                    return length;
+                },
+                key: function(index) {
+                    var key, i = 0;
+                    $.each(dataset, function(k) {
+                        if(i === index) {
+                            key = k;
+                            return false;
+                        }
+                        i++;
+                    });
+                    return key;
+                },
+                removeItem: function(key) {
+                    delete dataset[key];
+                },
+                getItem: function(key) {
+                    return dataset[key];
+                },
+                setItem: function(key, val) {
+                    dataset[key] = val;
+                },
+                clear: function() {
+                    dataset = {};
+                }
+            };
+        }
         this.storage = storage;
-
         this.page = this.get(pageName, {});
     };
 
@@ -1634,7 +1713,8 @@
 
     /* Iterate all items with callback */
     Store.prototype.forEach = function(callback) {
-        for(var i = storage.length - 1; i >= 0; i--) {
+        var length = this.length();
+        for(var i = length - 1; i >= 0; i--) {
             var key = storage.key(i);
             callback(key, this.get(key));
         }
@@ -1677,7 +1757,7 @@
  * ZUI: draggable.js
  * http://zui.sexy
  * ========================================================================
- * Copyright (c) 2014 cnezsoft.com; Licensed MIT
+ * Copyright (c) 2014-2016 cnezsoft.com; Licensed MIT
  * ======================================================================== */
 
 
@@ -1687,7 +1767,6 @@
     var Draggable = function(element, options) {
         this.$ = $(element);
         this.options = this.getOptions(options);
-
         this.init();
     };
 
@@ -1714,12 +1793,12 @@
             startPos, cPos, startOffset, mousePos, moved;
 
         var mouseDown = function(event) {
-            if(setting.hasOwnProperty(BEFORE) && $.isFunction(setting[BEFORE])) {
+            if($.isFunction(setting[BEFORE])) {
                 var isSure = setting[BEFORE]({
                     event: event,
                     element: $e
                 });
-                if(isSure !== undefined && (!isSure)) return;
+                if(isSure === false) return;
             }
 
             var $container = $(setting.container),
@@ -1758,7 +1837,7 @@
                 $e.css(dragPos);
             }
 
-            if(setting.hasOwnProperty(DRAG) && $.isFunction(setting[DRAG])) {
+            if($.isFunction(setting[DRAG])) {
                 setting[DRAG]({
                     event: event,
                     element: $e,
@@ -1797,10 +1876,11 @@
                 $e.css(endPos);
             }
 
-            if(setting.hasOwnProperty(FINISH) && $.isFunction(setting[FINISH])) {
+            if($.isFunction(setting[FINISH])) {
                 setting[FINISH]({
                     event: event,
                     element: $e,
+                    startOffset: startOffset,
                     pos: endPos,
                     offset: {
                         x: event.pageX - startPos.x,
@@ -1845,7 +1925,7 @@
  * ZUI: droppable.js
  * http://zui.sexy
  * ========================================================================
- * Copyright (c) 2014 cnezsoft.com; Licensed MIT
+ * Copyright (c) 2014-2016 cnezsoft.com; Licensed MIT
  * ======================================================================== */
 
 
@@ -1890,12 +1970,12 @@
         this.$triggerTarget = (setting.trigger ? ($.isFunction(setting.trigger) ? setting.trigger($e) : $e.find(setting.trigger)).first() : $e);
 
         this.$triggerTarget.on('mousedown', function(event) {
-            if(setting.hasOwnProperty(BEFORE) && $.isFunction(setting[BEFORE])) {
+            if($.isFunction(setting[BEFORE])) {
                 var isSure = setting[BEFORE]({
                     event: event,
                     element: $e
                 });
-                if(isSure !== undefined && (!isSure)) return;
+                if(isSure === false) return;
             }
 
             var $targets = $.isFunction(setting.target) ? setting.target($e) : $(setting.target),
@@ -2116,150 +2196,12 @@
 
 
 /* ========================================================================
- * ZUI: sortable.js
- * http://zui.sexy
- * ========================================================================
- * Copyright (c) 2014 cnezsoft.com; Licensed MIT
- * ======================================================================== */
-
-
-+ function($, window, document, Math) {
-    'use strict';
-
-    var Sortable = function(element, options) {
-        this.$ = $(element);
-        this.options = this.getOptions(options);
-
-        this.init();
-    };
-
-    Sortable.DEFAULTS = {
-        selector: 'li, div',
-        dragCssClass: 'invisible'
-    }; // default options
-
-    Sortable.prototype.getOptions = function(options) {
-        options = $.extend({}, Sortable.DEFAULTS, this.$.data(), options);
-        return options;
-    };
-
-    Sortable.prototype.init = function() {
-        this.bindEventToList(this.$.children(this.options.selector));
-    };
-
-    Sortable.prototype.reset = function() {
-        var that = this,
-            order = 0;
-        var $list = this.$.children(this.options.selector).not('.drag-shadow');
-
-        $list.each(function() {
-            var $this = $(this);
-            if($this.data('zui.droppable')) {
-                $this.data('zui.droppable').options.target = $list;
-                $this.droppable('reset');
-            } else {
-                that.bindEventToList($list);
-                return false;
-            }
-        });
-    };
-
-    Sortable.prototype.bindEventToList = function($list) {
-        var self = this.$,
-            options = this.options;
-        var isReverse = options.reverse;
-
-        markOrders($list);
-        $list.droppable({
-            trigger: options.trigger,
-            target: self.children(options.selector),
-            container: self,
-            always: options.always,
-            flex: true,
-            before: options.before,
-            start: function(e) {
-                if(options.dragCssClass) e.element.addClass(options.dragCssClass);
-                $.zui.callEvent(options['start']);
-            },
-            drag: function(e) {
-                self.addClass('sortable-sorting');
-                if(e.isIn) {
-                    var $ele = e.element,
-                        $target = e.target;
-                    var eleOrder = $ele.attr('data-order'),
-                        targetOrder = $target.attr('data-order');
-                    if(eleOrder == targetOrder) return;
-                    else if(eleOrder > targetOrder) {
-                        $target[isReverse ? 'after' : 'before']($ele);
-                    } else {
-                        $target[isReverse ? 'before' : 'after']($ele);
-                    }
-                    var list = self.children(options.selector).not('.drag-shadow');
-                    markOrders(list);
-                    $.zui.callEvent(options['order'], {
-                        list: list,
-                        element: $ele
-                    });
-                }
-            },
-            finish: function(e) {
-                if(options.dragCssClass && e.element) e.element.removeClass(options.dragCssClass);
-                $.zui.callEvent(options['finish'], {
-                    list: self.children(options.selector),
-                    element: e.element
-                });
-                self.removeClass('sortable-sorting');
-            }
-        });
-
-        function markOrders(list) {
-            var orders = [];
-            list.each(function() {
-                var thisOrder = $(this).data('order');
-                if(typeof thisOrder === 'number') {
-                    orders.push(thisOrder);
-                }
-            });
-            orders.sort(function(a, b) {
-                return a - b;
-            });
-
-            var listSize = list.length;
-            while(orders.length < listSize) {
-                orders.push(orders.length ? (orders[orders.length - 1] + 1) : 0);
-            }
-
-            if(isReverse) {
-                orders.reverse();
-            }
-
-            var listIndex = 0
-            list.each(function() {
-                $(this).attr('data-order', orders[listIndex++]);
-            });
-        }
-    };
-
-    $.fn.sortable = function(option) {
-        return this.each(function() {
-            var $this = $(this);
-            var data = $this.data('zui.sortable');
-            var options = typeof option == 'object' && option;
-
-            if(!data) $this.data('zui.sortable', (data = new Sortable(this, options)));
-            else if(typeof option == 'object') data.reset();
-
-            if(typeof option == 'string') data[option]();
-        })
-    };
-
-    $.fn.sortable.Constructor = Sortable;
-}(jQuery, window, document, Math);
-
-
-/* ========================================================================
  * Bootstrap: modal.js v3.2.0
  * http://getbootstrap.com/javascript/#modals
+ *
+ * ZUI: The file has been changed in ZUI. It will not keep update with the
+ * Bootsrap version in the future.
+ * http://zui.sexy
  * ========================================================================
  * Copyright 2011-2014 Twitter, Inc.
  * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
@@ -2349,6 +2291,7 @@
     }
 
     Modal.prototype.setMoveale = function() {
+        if(!$.fn.draggable) console.error('Moveable modal requires draggable.js.');
         var that = this;
         var options = that.options;
         var $dialog = that.$element.find('.modal-dialog').removeClass('modal-dragged');
@@ -2633,9 +2576,10 @@
 
 
 /* ========================================================================
- * ZUI: modal.trigger.js v1.2.0
- * http://zui.sexy/docs/javascript.html#modals
- * Licensed under MIT
+ * ZUI: modal.trigger.js [1.2.0+]
+ * http://zui.sexy
+ * ========================================================================
+ * Copyright (c) 2014-2016 cnezsoft.com; Licensed MIT
  * ======================================================================== */
 
 
@@ -2871,11 +2815,13 @@
                             $modal.callEvent('loaded' + ZUI_MODAL, {
                                 modalType: 'iframe',
                                 jQuery: frame$
-                            }, that);
+                            }, null);
 
                             setTimeout(ajustFrameSize, 100);
 
                             $framebody.off('resize.' + NAME).on('resize.' + NAME, resizeDialog);
+                        } else {
+                            readyToShow();
                         }
 
                         frame$.extend({
@@ -3038,6 +2984,10 @@
  * Bootstrap: tooltip.js v3.0.0
  * http://twzui.github.com/bootstrap/javascript.html#tooltip
  * Inspired by the original jQuery.tipsy by Jason Frame
+ *  
+ * ZUI: The file has been changed in ZUI. It will not keep update with the
+ * Bootsrap version in the future.
+ * http://zui.sexy
  * ========================================================================
  * Copyright 2012 Twitter, Inc.
  *
@@ -3175,7 +3125,7 @@
     Tooltip.prototype.show = function(content) {
         var e = $.Event('show.zui.' + this.type)
 
-        if(this.hasContent() && this.enabled) {
+        if((content || this.hasContent()) && this.enabled) {
             this.$element.trigger(e)
 
             if(e.isDefaultPrevented()) return
@@ -3448,6 +3398,10 @@
 /* ========================================================================
  * Bootstrap: popover.js v3.0.0
  * http://twbs.github.com/bootstrap/javascript.html#popovers
+ *
+ * ZUI: The file has been changed in ZUI. It will not keep update with the
+ * Bootsrap version in the future.
+ * http://zui.sexy
  * ========================================================================
  * Copyright 2012 Twitter, Inc.
  *
@@ -3589,6 +3543,10 @@
 /* ========================================================================
  * Bootstrap: dropdown.js v3.0.0
  * http://twbs.github.com/bootstrap/javascript.html#dropdowns
+ *
+ * ZUI: The file has been changed in ZUI. It will not keep update with the
+ * Bootsrap version in the future.
+ * http://zui.sexy
  * ========================================================================
  * Copyright 2012 Twitter, Inc.
  *
@@ -3698,9 +3656,10 @@
             selector = $this.attr('href')
             selector = selector && /#/.test(selector) && selector.replace(/.*(?=#[^\s]*$)/, '') //strip for ie7
         }
-
-        var $parent = selector && $(selector)
-
+        var $parent;
+        try {
+            $parent = selector && $(selector);
+        } catch(e) {}
         return $parent && $parent.length ? $parent : $this.parent()
     }
 
@@ -3750,6 +3709,10 @@
 /* ========================================================================
  * Bootstrap: carousel.js v3.0.0
  * http://twzui.github.com/bootstrap/javascript.html#carousel
+ * 
+ * ZUI: The file has been changed in ZUI. It will not keep update with the
+ * Bootsrap version in the future.
+ * http://zui.sexy
  * ========================================================================
  * Copyright 2012 Twitter, Inc.
  *
@@ -3803,6 +3766,7 @@
 
         this.$element.on('touchstart touchmove touchend', touch);
         var touchStartX, touchStartY;
+        var that = this;
 
         /* listen the touch event */
         function touch(event) {
@@ -3834,8 +3798,8 @@
         }
 
         function handleCarousel(carousel, distance) {
-            if(distance > 10) carousel.find('.left.carousel-control').click();
-            if(distance < -10) carousel.find('.right.carousel-control').click();
+            if(distance > 10) that.prev();
+            else if(distance < -10) that.next();
         }
     }
 
@@ -4021,13 +3985,19 @@
 
 
 /* ========================================================================
- * image.ready.js
+ * TangBin: image.ready.js
  * http://www.planeart.cn/?p=1121
+ *
+ * ZUI: The file has been changed in ZUI. It will not keep update with the
+ * original version in the future.
+ * http://zui.sexy
  * ========================================================================
  * @version 2011.05.27
  * @author  TangBin
  * ======================================================================== */
 
+
+/*! TangBin: image.ready.js http://www.planeart.cn/?p=1121 */
 
 (function($) {
     'use strict';
@@ -4124,7 +4094,7 @@
  * ZUI: lightbox.js
  * http://zui.sexy
  * ========================================================================
- * Copyright (c) 2014 cnezsoft.com; Licensed MIT
+ * Copyright (c) 2014-2016 cnezsoft.com; Licensed MIT
  * ======================================================================== */
 
 
@@ -4199,7 +4169,7 @@
                         width: Math.min(winWidth, this.width)
                     });
                     if(winWidth < (this.width + 30)) modal.addClass('lightbox-full');
-                    e.ready();
+                    e.ready(200);
                 });
 
                 modal.find('.prev').toggleClass('show', groups.filter('[data-group-index="' + (groupIndex - 1) + '"]').length > 0);
@@ -4269,15 +4239,15 @@
  * ZUI: messager.js
  * http://zui.sexy
  * ========================================================================
- * Copyright (c) 2014 cnezsoft.com; Licensed MIT
+ * Copyright (c) 2014-2016 cnezsoft.com; Licensed MIT
  * ======================================================================== */
 
 
-(function($, window) {
+(function($, window, undefined) {
     'use strict';
 
     var id = 0;
-    var template = '<div class="messager messager-{type} {placement}" id="messager{id}" style="display:none"><div class="messager-content"></div><div class="messager-actions"><button type="button" class="close action">&times;</button></div></div>';
+    var template = '<div class="messager messager-{type} {placement}" style="display: none"><div class="messager-content"></div><div class="messager-actions"></div></div>';
     var defaultOptions = {
         type: 'default',
         placement: 'top',
@@ -4286,42 +4256,118 @@
         // clear: false,
         icon: null,
         close: true,
+        // actions: [{icon, name, action, title}],
+        // contentClass: null,
+        // cssClass: null,
+        // onAction: function,
         fade: true,
         scale: true
     };
-    var lastMessager;
+    var all = {};
 
     var Messager = function(message, options) {
+        if($.isPlainObject(message)) {
+            options = message;
+            message = options.message;
+        }
+
         var that = this;
-        that.id = id++;
+        that.id = options.id || (id++);
+        var oldMessager = all[that.id];
+        if(oldMessager) oldMessager.destory();
+        all[that.id] = that;
         options = that.options = $.extend({}, defaultOptions, options);
         that.message = (options.icon ? '<i class="icon-' + options.icon + ' icon"></i> ' : '') + message;
 
         that.$ = $(template.format(options)).toggleClass('fade', options.fade).toggleClass('scale', options.scale).attr('id', 'messager-' + that.id);
-        if(!options.close) {
-            that.$.find('.close').remove();
-        } else {
-            that.$.on('click', '.close', function() {
-                that.hide();
+
+        if(options.cssClass) that.$.addClass(options.cssClass);
+
+        var hasCloseAction = false;
+        var $actions = that.$.find('.messager-actions');
+        var appendAction = function(action) {
+            var $btn = $('<button type="button" class="action action-' + action.name + '"/>');
+            if(action.name === 'close') $btn.addClass('close');
+            if(action.html !== undefined) {
+                $btn.html(action.html);
+            }
+            if(action.icon !== undefined) {
+                $btn.append('<i class="action-icon icon-' + action.icon + '"/>');
+            }
+            if(action.text !== undefined) {
+                $btn.append('<span class="action-text">' + action.text + '</span>');
+            }
+            if(action.tooltip !== undefined) {
+                $btn.attr('title', action.tooltip).tooltip();
+            }
+            $btn.data('action', action);
+            $actions.append($btn);
+        };
+        if(options.actions) {
+            $.each(options.actions, function(idx, action) {
+                if(action.name === undefined) action.name = idx;
+                if(action.name == 'close') hasCloseAction = true;
+                appendAction(action);
             });
         }
+        if(!hasCloseAction && options.close) {
+            appendAction({name: 'close', html: '&times;'});
+        }
 
-        that.$.find('.messager-content').html(that.message);
+        that.$.on('click', '.action', function(e) {
+            var action = $(this).data('action'), result;
+            if(options.onAction) {
+                result = options.onAction.call(this, action.name, action, that);
+                if(result === false) return;
+            }
+            if($.isFunction(action.action)) {
+                result = action.action.call(this, that);
+                if(result === false) return;
+            }
+            that.hide();
+            e.stopPropagation();
+        });
 
+        that.$.on('click', function(e) {
+            if(options.onAction) {
+                result = options.onAction.call(this, 'content', null, that);
+                if(result === true) that.hide();
+            }
+        });
+
+        var $content = that.$.find('.messager-content').html(that.message);
+        if(options.contentClass) $content.addClass(options.cssClass);
 
         that.$.data('zui.messager', that);
+
+        if(options.show && that.message !== undefined) {
+            that.show();
+        }
     };
 
-    Messager.prototype.show = function(message) {
+    Messager.prototype.update = function(message, newOptions) {
+        var that = this;
+        var options = that.options;
+        that.$.removeClass('messager-' + options.type);
+        if(newOptions) {
+            options = $.extend(options, newOptions);
+        }
+        that.$.addClass('messager-' + options.type);
+        if(message) {
+            that.message = (options.icon ? '<i class="icon-' + options.icon + ' icon"></i> ' : '') + message;
+            that.$.find('.messager-content').html(that.message);
+        }
+    };
+
+    Messager.prototype.show = function(message, callback) {
         var that = this,
             options = this.options;
 
-        if(lastMessager) {
-            if(lastMessager.id == that.id) {
-                that.$.removeClass('in');
-            } else if(lastMessager.isShow) {
-                lastMessager.hide();
-            }
+        if(that.isShow) {
+            that.hide(function() {
+                that.show(message, callback);
+            });
+            return;
         }
 
         if(that.hiding) {
@@ -4329,22 +4375,29 @@
             that.hiding = null;
         }
 
-        if(message) {
-            that.message = (options.icon ? '<i class="icon-' + options.icon + ' icon"></i> ' : '') + message;
-            that.$.find('.messager-content').html(that.message);
+        if($.isFunction(message)) {
+            var oldCallback = callback;
+            callback = message;
+            if(oldCallback !== undefined) {
+                message = oldCallback;
+            }
         }
 
-        that.$.appendTo(options.parent).show();
+        that.update(message);
 
-        if(options.placement === 'top' || options.placement === 'bottom' || options.placement === 'center') {
-            that.$.css('left', ($(window).width() - that.$.width() - 50) / 2);
+        var placement = options.placement;
+        var $parent = $(options.parent);
+        var $holder = $parent.children('.messagers-holder.' + placement);
+        if(!$holder.length) {
+            $holder = $('<div/>').attr('class', 'messagers-holder ' + placement).appendTo($parent);
+        }
+        $holder.append(that.$);
+        if(placement === 'center') {
+            var offset = $(window).height() - $holder.height();
+            $holder.css('top', Math.max(-offset, offset/2));
         }
 
-        if(options.placement === 'left' || options.placement === 'right' || options.placement === 'center') {
-            that.$.css('top', ($(window).height() - that.$.height() - 50) / 2);
-        }
-
-        that.$.addClass('in');
+        that.$.show().addClass('in');
 
         if(options.time) {
             that.hiding = setTimeout(function() {
@@ -4353,19 +4406,48 @@
         }
 
         that.isShow = true;
-        lastMessager = that;
+        callback && callback();
+        return that;
     };
 
-    Messager.prototype.hide = function() {
+    Messager.prototype.hide = function(callback, immediately) {
+        if(callback === true) {
+            immediately = true;
+            callback = null;
+        }
         var that = this;
         if(that.$.hasClass('in')) {
             that.$.removeClass('in');
-            setTimeout(function() {
-                that.$.remove();
-            }, 200);
+            var removeMessager = function() {
+                var $parent = that.$.parent();
+                that.$.detach();
+                if(!$parent.children().length) $parent.remove();
+                callback && callback(true);
+            };
+            if(immediately) removeMessager();
+            else setTimeout(removeMessager, 200);
+        } else {
+            callback && callback(false);
         }
 
         that.isShow = false;
+    };
+
+    Messager.prototype.destory = function() {
+        var that = this;
+        that.hide(true);
+        that.$.remove();
+        that.$ = null;
+        delete all[that.id];
+    };
+
+    Messager.all = all;
+
+    var hideMessage = function() {
+        $('.messager').each(function() {
+            var msg = $(this).data('zui.messager');
+            if(msg && msg.hide) msg.hide(true);
+        });
     };
 
     var showMessage = function(message, options) {
@@ -4374,16 +4456,11 @@
                 type: options
             };
         }
-        var msg = new Messager(message, options);
+        options = $.extend({}, options);
+        if(options.id === undefined) hideMessage();
+        var msg = all[options.id] || new Messager(message, options);
         msg.show();
         return msg;
-    };
-
-    var hideMessage = function() {
-        $('.messager').each(function() {
-            var msg = $(this).data('zui.messager');
-            if(msg && msg.hide) msg.hide();
-        });
     };
 
     var getOptions = function(options) {
@@ -4392,61 +4469,41 @@
         } : options;
     };
 
+    var zuiMessager = {
+        show: showMessage,
+        hide: hideMessage
+    };
+
+    $.each({
+        primary  : 0,
+        success  : 'ok-sign',
+        info     : 'info-sign',
+        warning  : 'warning-sign',
+        danger   : 'exclamation-sign',
+        important: 0,
+        special  : 0
+    }, function(name, icon){
+        zuiMessager[name] = function(message, options) {
+            return showMessage(message, $.extend({
+                type: name,
+                icon: icon || null
+            }, getOptions(options)));
+        };
+    });
+
     $.zui({
         Messager: Messager,
         showMessager: showMessage,
-        messager: {
-            show: showMessage,
-            hide: hideMessage,
-            primary: function(message, options) {
-                return showMessage(message, $.extend({
-                    type: 'primary'
-                }, getOptions(options)));
-            },
-            success: function(message, options) {
-                return showMessage(message, $.extend({
-                    type: 'success',
-                    icon: 'ok-sign'
-                }, getOptions(options)));
-            },
-            info: function(message, options) {
-                return showMessage(message, $.extend({
-                    type: 'info',
-                    icon: 'info-sign'
-                }, getOptions(options)));
-            },
-            warning: function(message, options) {
-                return showMessage(message, $.extend({
-                    type: 'warning',
-                    icon: 'warning-sign'
-                }, getOptions(options)));
-            },
-            danger: function(message, options) {
-                return showMessage(message, $.extend({
-                    type: 'danger',
-                    icon: 'exclamation-sign'
-                }, getOptions(options)));
-            },
-            important: function(message, options) {
-                return showMessage(message, $.extend({
-                    type: 'important'
-                }, getOptions(options)));
-            },
-            special: function(message, options) {
-                return showMessage(message, $.extend({
-                    type: 'special'
-                }, getOptions(options)));
-            }
-        }
+        messager: zuiMessager
     });
-}(jQuery, window));
+}(jQuery, window, undefined));
 
 
 /* ========================================================================
  * ZUI: menu.js
  * http://zui.sexy
  * ========================================================================
- * Copyright (c) 2014 cnezsoft.com; Licensed MIT
+ * Copyright (c) 2014-2016 cnezsoft.com; Licensed MIT
  * ======================================================================== */
 
 
@@ -4528,1576 +4585,276 @@
 }(jQuery));
 
 
-/**
- * bootbox.js [v4.4.0]
- *
- * http://bootboxjs.com/license.txt
- * ========================================================================
- * Improvement in ZUI:
- * 1. Determine client language and apply setting automatically.
- * 2. Changed button position.
- * ======================================================================== */
-
-
-// @see https://github.com/makeusabrew/bootbox/issues/180
-// @see https://github.com/makeusabrew/bootbox/issues/186
-(function(root, factory) {
-
-    'use strict';
-    if(typeof define === "function" && define.amd) {
-        // AMD. Register as an anonymous module.
-        define(["jquery"], factory);
-    } else if(typeof exports === "object") {
-        // Node. Does not work with strict CommonJS, but
-        // only CommonJS-like environments that support module.exports,
-        // like Node.
-        module.exports = factory(require("jquery"));
-    } else {
-        // Browser globals (root is window)
-        root.bootbox = factory(root.jQuery);
-    }
-
-}(this, function init($, undefined) {
-
-    'use strict';
-
-    // the base DOM structure needed to create a modal
-    var templates = {
-        dialog: "<div class='bootbox modal' tabindex='-1' role='dialog'>" +
-            "<div class='modal-dialog'>" +
-            "<div class='modal-content'>" +
-            "<div class='modal-body'><div class='bootbox-body'></div></div>" +
-            "</div>" +
-            "</div>" +
-            "</div>",
-        header: "<div class='modal-header'>" +
-            "<h4 class='modal-title'></h4>" +
-            "</div>",
-        footer: "<div class='modal-footer'></div>",
-        closeButton: "<button type='button' class='bootbox-close-button close' data-dismiss='modal' aria-hidden='true'>&times;</button>",
-        form: "<form class='bootbox-form'></form>",
-        inputs: {
-            text: "<input class='bootbox-input bootbox-input-text form-control' autocomplete=off type=text />",
-            textarea: "<textarea class='bootbox-input bootbox-input-textarea form-control'></textarea>",
-            email: "<input class='bootbox-input bootbox-input-email form-control' autocomplete='off' type='email' />",
-            select: "<select class='bootbox-input bootbox-input-select form-control'></select>",
-            checkbox: "<div class='checkbox'><label><input class='bootbox-input bootbox-input-checkbox' type='checkbox' /></label></div>",
-            date: "<input class='bootbox-input bootbox-input-date form-control' autocomplete=off type='date' />",
-            time: "<input class='bootbox-input bootbox-input-time form-control' autocomplete=off type='time' />",
-            number: "<input class='bootbox-input bootbox-input-number form-control' autocomplete=off type='number' />",
-            password: "<input class='bootbox-input bootbox-input-password form-control' autocomplete='off' type='password' />"
-        }
-    };
-
-    var defaults = {
-        // default language
-        locale: $.zui && $.zui.clientLang ? $.zui.clientLang() : 'zh_cn',
-        // show backdrop or not. Default to static so user has to interact with dialog
-        backdrop: "static",
-        // animate the modal in/out
-        animate: true,
-        // additional class string applied to the top level dialog
-        className: null,
-        // whether or not to include a close button
-        closeButton: true,
-        // show the dialog immediately by default
-        show: true,
-        // dialog container
-        container: "body"
-    };
-
-    // our public object; augmented after our private API
-    var exports = {};
-
-    function judgeClientLang() {
-        var lang;
-        if(typeof(config) != 'undefined' && config.clientLang) {
-            lang = config.clientLang;
-        } else {
-            var hl = $('html').attr('lang');
-            lang = hl ? hl : 'en';
-        }
-        return lang.replace('-', '_').toLowerCase();
-    }
-
-    /**
-     * @private
-     */
-    function _t(key) {
-        var locale = locales[defaults.locale];
-        return locale ? locale[key] : locales.en[key];
-    }
-
-    function processCallback(e, dialog, callback) {
-        e.stopPropagation();
-        e.preventDefault();
-
-        // by default we assume a callback will get rid of the dialog,
-        // although it is given the opportunity to override this
-
-        // so, if the callback can be invoked and it *explicitly returns false*
-        // then we'll set a flag to keep the dialog active...
-        var preserveDialog = $.isFunction(callback) && callback.call(dialog, e) === false;
-
-        // ... otherwise we'll bin it
-        if(!preserveDialog) {
-            dialog.modal("hide");
-        }
-    }
-
-    function getKeyLength(obj) {
-        // @TODO defer to Object.keys(x).length if available?
-        var k, t = 0;
-        for(k in obj) {
-            t++;
-        }
-        return t;
-    }
-
-    function each(collection, iterator) {
-        var index = 0;
-        $.each(collection, function(key, value) {
-            iterator(key, value, index++);
-        });
-    }
-
-    function sanitize(options) {
-        var buttons;
-        var total;
-
-        if(typeof options !== "object") {
-            throw new Error("Please supply an object of options");
-        }
-
-        if(!options.message) {
-            throw new Error("Please specify a message");
-        }
-
-        // make sure any supplied options take precedence over defaults
-        options = $.extend({}, defaults, options);
-
-        if(!options.buttons) {
-            options.buttons = {};
-        }
-
-        buttons = options.buttons;
-
-        total = getKeyLength(buttons);
-
-        each(buttons, function(key, button, index) {
-
-            if($.isFunction(button)) {
-                // short form, assume value is our callback. Since button
-                // isn't an object it isn't a reference either so re-assign it
-                button = buttons[key] = {
-                    callback: button
-                };
-            }
-
-            // before any further checks make sure by now button is the correct type
-            if($.type(button) !== "object") {
-                throw new Error("button with key " + key + " must be an object");
-            }
-
-            if(!button.label) {
-                // the lack of an explicit label means we'll assume the key is good enough
-                button.label = key;
-            }
-
-            if(!button.className) {
-                if(total <= 2 && index === total - 1) {
-                    // always add a primary to the main option in a two-button dialog
-                    button.className = "btn-primary";
-                } else {
-                    button.className = "btn-default";
-                }
-            }
-        });
-
-        return options;
-    }
-
-    /**
-     * map a flexible set of arguments into a single returned object
-     * if args.length is already one just return it, otherwise
-     * use the properties argument to map the unnamed args to
-     * object properties
-     * so in the latter case:
-     * mapArguments(["foo", $.noop], ["message", "callback"])
-     * -> { message: "foo", callback: $.noop }
-     */
-    function mapArguments(args, properties) {
-        var argn = args.length;
-        var options = {};
-
-        if(argn < 1 || argn > 2) {
-            throw new Error("Invalid argument length");
-        }
-
-        if(argn === 2 || typeof args[0] === "string") {
-            options[properties[0]] = args[0];
-            options[properties[1]] = args[1];
-        } else {
-            options = args[0];
-        }
-
-        return options;
-    }
-
-    /**
-     * merge a set of default dialog options with user supplied arguments
-     */
-    function mergeArguments(defaults, args, properties) {
-        return $.extend(
-            // deep merge
-            true,
-            // ensure the target is an empty, unreferenced object
-            {},
-            // the base options object for this type of dialog (often just buttons)
-            defaults,
-            // args could be an object or array; if it's an array properties will
-            // map it to a proper options object
-            mapArguments(
-                args,
-                properties
-            )
-        );
-    }
-
-    /**
-     * this entry-level method makes heavy use of composition to take a simple
-     * range of inputs and return valid options suitable for passing to bootbox.dialog
-     */
-    function mergeDialogOptions(className, labels, properties, args) {
-        //  build up a base set of dialog properties
-        var baseOptions = {
-            className: "bootbox-" + className,
-            buttons: createLabels.apply(null, labels)
-        };
-
-        // ensure the buttons properties generated, *after* merging
-        // with user args are still valid against the supplied labels
-        return validateButtons(
-            // merge the generated base properties with user supplied arguments
-            mergeArguments(
-                baseOptions,
-                args,
-                // if args.length > 1, properties specify how each arg maps to an object key
-                properties
-            ),
-            labels
-        );
-    }
-
-    /**
-     * from a given list of arguments return a suitable object of button labels
-     * all this does is normalise the given labels and translate them where possible
-     * e.g. "ok", "confirm" -> { ok: "OK, cancel: "Annuleren" }
-     */
-    function createLabels() {
-        var buttons = {};
-
-        for(var i = 0, j = arguments.length; i < j; i++) {
-            var argument = arguments[i];
-            var key = argument.toLowerCase();
-            var value = argument.toUpperCase();
-
-            buttons[key] = {
-                label: _t(value)
-            };
-        }
-
-        return buttons;
-    }
-
-    function validateButtons(options, buttons) {
-        var allowedButtons = {};
-        each(buttons, function(key, value) {
-            allowedButtons[value] = true;
-        });
-
-        each(options.buttons, function(key) {
-            if(allowedButtons[key] === undefined) {
-                throw new Error("button key " + key + " is not allowed (options are " + buttons.join("\n") + ")");
-            }
-        });
-
-        return options;
-    }
-
-    exports.alert = function() {
-        var options;
-
-        options = mergeDialogOptions("alert", ["ok"], ["message", "callback"], arguments);
-
-        if(options.callback && !$.isFunction(options.callback)) {
-            throw new Error("alert requires callback property to be a function when provided");
-        }
-
-        /**
-         * overrides
-         */
-        options.buttons.ok.callback = options.onEscape = function() {
-            if($.isFunction(options.callback)) {
-                return options.callback.call(this);
-            }
-            return true;
-        };
-
-        return exports.dialog(options);
-    };
-
-    exports.confirm = function() {
-        var options;
-
-        options = mergeDialogOptions("confirm", ["cancel", "confirm"], ["message", "callback"], arguments);
-
-        /**
-         * overrides; undo anything the user tried to set they shouldn't have
-         */
-        options.buttons.cancel.callback = options.onEscape = function() {
-            return options.callback.call(this, false);
-        };
-
-        options.buttons.confirm.callback = function() {
-            return options.callback.call(this, true);
-        };
-
-        // confirm specific validation
-        if(!$.isFunction(options.callback)) {
-            throw new Error("confirm requires a callback");
-        }
-
-        return exports.dialog(options);
-    };
-
-    exports.prompt = function() {
-        var options;
-        var defaults;
-        var dialog;
-        var form;
-        var input;
-        var shouldShow;
-        var inputOptions;
-
-        // we have to create our form first otherwise
-        // its value is undefined when gearing up our options
-        // @TODO this could be solved by allowing message to
-        // be a function instead...
-        form = $(templates.form);
-
-        // prompt defaults are more complex than others in that
-        // users can override more defaults
-        // @TODO I don't like that prompt has to do a lot of heavy
-        // lifting which mergeDialogOptions can *almost* support already
-        // just because of 'value' and 'inputType' - can we refactor?
-        defaults = {
-            className: "bootbox-prompt",
-            buttons: createLabels("cancel", "confirm"),
-            value: "",
-            inputType: "text"
-        };
-
-        options = validateButtons(
-            mergeArguments(defaults, arguments, ["title", "callback"]), ["cancel", "confirm"]
-        );
-
-        // capture the user's show value; we always set this to false before
-        // spawning the dialog to give us a chance to attach some handlers to
-        // it, but we need to make sure we respect a preference not to show it
-        shouldShow = (options.show === undefined) ? true : options.show;
-
-        /**
-         * overrides; undo anything the user tried to set they shouldn't have
-         */
-        options.message = form;
-
-        options.buttons.cancel.callback = options.onEscape = function() {
-            return options.callback.call(this, null);
-        };
-
-        options.buttons.confirm.callback = function() {
-            var value;
-
-            switch(options.inputType) {
-                case "text":
-                case "textarea":
-                case "email":
-                case "select":
-                case "date":
-                case "time":
-                case "number":
-                case "password":
-                    value = input.val();
-                    break;
-
-                case "checkbox":
-                    var checkedItems = input.find("input:checked");
-
-                    // we assume that checkboxes are always multiple,
-                    // hence we default to an empty array
-                    value = [];
-
-                    each(checkedItems, function(_, item) {
-                        value.push($(item).val());
-                    });
-                    break;
-            }
-
-            return options.callback.call(this, value);
-        };
-
-        options.show = false;
-
-        // prompt specific validation
-        if(!options.title) {
-            throw new Error("prompt requires a title");
-        }
-
-        if(!$.isFunction(options.callback)) {
-            throw new Error("prompt requires a callback");
-        }
-
-        if(!templates.inputs[options.inputType]) {
-            throw new Error("invalid prompt type");
-        }
-
-        // create the input based on the supplied type
-        input = $(templates.inputs[options.inputType]);
-
-        switch(options.inputType) {
-            case "text":
-            case "textarea":
-            case "email":
-            case "date":
-            case "time":
-            case "number":
-            case "password":
-                input.val(options.value);
-                break;
-
-            case "select":
-                var groups = {};
-                inputOptions = options.inputOptions || [];
-
-                if(!$.isArray(inputOptions)) {
-                    throw new Error("Please pass an array of input options");
-                }
-
-                if(!inputOptions.length) {
-                    throw new Error("prompt with select requires options");
-                }
-
-                each(inputOptions, function(_, option) {
-
-                    // assume the element to attach to is the input...
-                    var elem = input;
-
-                    if(option.value === undefined || option.text === undefined) {
-                        throw new Error("given options in wrong format");
-                    }
-
-                    // ... but override that element if this option sits in a group
-
-                    if(option.group) {
-                        // initialise group if necessary
-                        if(!groups[option.group]) {
-                            groups[option.group] = $("<optgroup/>").attr("label", option.group);
-                        }
-
-                        elem = groups[option.group];
-                    }
-
-                    elem.append("<option value='" + option.value + "'>" + option.text + "</option>");
-                });
-
-                each(groups, function(_, group) {
-                    input.append(group);
-                });
-
-                // safe to set a select's value as per a normal input
-                input.val(options.value);
-                break;
-
-            case "checkbox":
-                var values = $.isArray(options.value) ? options.value : [options.value];
-                inputOptions = options.inputOptions || [];
-
-                if(!inputOptions.length) {
-                    throw new Error("prompt with checkbox requires options");
-                }
-
-                if(!inputOptions[0].value || !inputOptions[0].text) {
-                    throw new Error("given options in wrong format");
-                }
-
-                // checkboxes have to nest within a containing element, so
-                // they break the rules a bit and we end up re-assigning
-                // our 'input' element to this container instead
-                input = $("<div/>");
-
-                each(inputOptions, function(_, option) {
-                    var checkbox = $(templates.inputs[options.inputType]);
-
-                    checkbox.find("input").attr("value", option.value);
-                    checkbox.find("label").append(option.text);
-
-                    // we've ensured values is an array so we can always iterate over it
-                    each(values, function(_, value) {
-                        if(value === option.value) {
-                            checkbox.find("input").prop("checked", true);
-                        }
-                    });
-
-                    input.append(checkbox);
-                });
-                break;
-        }
-
-        // @TODO provide an attributes option instead
-        // and simply map that as keys: vals
-        if(options.placeholder) {
-            input.attr("placeholder", options.placeholder);
-        }
-
-        if(options.pattern) {
-            input.attr("pattern", options.pattern);
-        }
-
-        if(options.maxlength) {
-            input.attr("maxlength", options.maxlength);
-        }
-
-        // now place it in our form
-        form.append(input);
-
-        form.on("submit", function(e) {
-            e.preventDefault();
-            // Fix for SammyJS (or similar JS routing library) hijacking the form post.
-            e.stopPropagation();
-            // @TODO can we actually click *the* button object instead?
-            // e.g. buttons.confirm.click() or similar
-            dialog.find(".btn-primary").click();
-        });
-
-        dialog = exports.dialog(options);
-
-        // clear the existing handler focusing the submit button...
-        dialog.off("shown.zui.modal");
-
-        // ...and replace it with one focusing our input, if possible
-        dialog.on("shown.zui.modal", function() {
-            // need the closure here since input isn't
-            // an object otherwise
-            input.focus();
-        });
-
-        if(shouldShow === true) {
-            dialog.modal("show");
-        }
-
-        return dialog;
-    };
-
-    exports.dialog = function(options) {
-        options = sanitize(options);
-
-        var dialog = $(templates.dialog);
-        var innerDialog = dialog.find(".modal-dialog");
-        var body = dialog.find(".modal-body");
-        var buttons = options.buttons;
-        var buttonStr = "";
-        var callbacks = {
-            onEscape: options.onEscape
-        };
-
-        if($.fn.modal === undefined) {
-            throw new Error(
-                "$.fn.modal is not defined; please double check you have included " +
-                "the Bootstrap JavaScript library. See http://getbootstrap.com/javascript/ " +
-                "for more details."
-            );
-        }
-
-        each(buttons, function(key, button) {
-
-            // @TODO I don't like this string appending to itself; bit dirty. Needs reworking
-            // can we just build up button elements instead? slower but neater. Then button
-            // can just become a template too
-            buttonStr += "<button data-bb-handler='" + key + "' type='button' class='btn " + button.className + "'>" + button.label + "</button>";
-            callbacks[key] = button.callback;
-        });
-
-        body.find(".bootbox-body").html(options.message);
-
-        if(options.animate === true) {
-            dialog.addClass("fade");
-        }
-
-        if(options.className) {
-            dialog.addClass(options.className);
-        }
-
-        if(options.size === "large") {
-            innerDialog.addClass("modal-lg");
-        } else if(options.size === "small") {
-            innerDialog.addClass("modal-sm");
-        }
-
-        if(options.title) {
-            body.before(templates.header);
-        }
-
-        if(options.closeButton) {
-            var closeButton = $(templates.closeButton);
-
-            if(options.title) {
-                dialog.find(".modal-header").prepend(closeButton);
-            } else {
-                closeButton.css("margin-top", "-10px").prependTo(body);
-            }
-        }
-
-        if(options.title) {
-            dialog.find(".modal-title").html(options.title);
-        }
-
-        if(buttonStr.length) {
-            body.after(templates.footer);
-            dialog.find(".modal-footer").html(buttonStr);
-        }
-
-
-        /**
-         * Bootstrap event listeners; used handle extra
-         * setup & teardown required after the underlying
-         * modal has performed certain actions
-         */
-
-        dialog.on("hidden.zui.modal", function(e) {
-            // ensure we don't accidentally intercept hidden events triggered
-            // by children of the current dialog. We shouldn't anymore now BS
-            // namespaces its events; but still worth doing
-            if(e.target === this) {
-                dialog.remove();
-            }
-        });
-
-        /*
-        dialog.on("show.zui.modal", function() {
-          // sadly this doesn't work; show is called *just* before
-          // the backdrop is added so we'd need a setTimeout hack or
-          // otherwise... leaving in as would be nice
-          if (options.backdrop) {
-            dialog.next(".modal-backdrop").addClass("bootbox-backdrop");
-          }
-        });
-        */
-
-        dialog.on("shown.zui.modal", function() {
-            dialog.find(".btn-primary:first").focus();
-        });
-
-        /**
-         * Bootbox event listeners; experimental and may not last
-         * just an attempt to decouple some behaviours from their
-         * respective triggers
-         */
-
-        if(options.backdrop !== "static") {
-            // A boolean true/false according to the Bootstrap docs
-            // should show a dialog the user can dismiss by clicking on
-            // the background.
-            // We always only ever pass static/false to the actual
-            // $.modal function because with `true` we can't trap
-            // this event (the .modal-backdrop swallows it)
-            // However, we still want to sort of respect true
-            // and invoke the escape mechanism instead
-            dialog.on("click.dismiss.zui.modal", function(e) {
-                // @NOTE: the target varies in >= 3.3.x releases since the modal backdrop
-                // moved *inside* the outer dialog rather than *alongside* it
-                if(dialog.children(".modal-backdrop").length) {
-                    e.currentTarget = dialog.children(".modal-backdrop").get(0);
-                }
-
-                if(e.target !== e.currentTarget) {
-                    return;
-                }
-
-                dialog.trigger("escape.close.bb");
-            });
-        }
-
-        dialog.on("escape.close.bb", function(e) {
-            if(callbacks.onEscape) {
-                processCallback(e, dialog, callbacks.onEscape);
-            }
-        });
-
-        /**
-         * Standard jQuery event listeners; used to handle user
-         * interaction with our dialog
-         */
-
-        dialog.on("click", ".modal-footer button", function(e) {
-            var callbackKey = $(this).data("bb-handler");
-
-            processCallback(e, dialog, callbacks[callbackKey]);
-        });
-
-        dialog.on("click", ".bootbox-close-button", function(e) {
-            // onEscape might be falsy but that's fine; the fact is
-            // if the user has managed to click the close button we
-            // have to close the dialog, callback or not
-            processCallback(e, dialog, callbacks.onEscape);
-        });
-
-        dialog.on("keyup", function(e) {
-            if(e.which === 27) {
-                dialog.trigger("escape.close.bb");
-            }
-        });
-
-        // the remainder of this method simply deals with adding our
-        // dialogent to the DOM, augmenting it with Bootstrap's modal
-        // functionality and then giving the resulting object back
-        // to our caller
-
-        $(options.container).append(dialog);
-
-        dialog.modal({
-            backdrop: options.backdrop ? "static" : false,
-            keyboard: false,
-            show: false
-        });
-
-        if(options.show) {
-            dialog.modal("show");
-        }
-
-        // @TODO should we return the raw element here or should
-        // we wrap it in an object on which we can expose some neater
-        // methods, e.g. var d = bootbox.alert(); d.hide(); instead
-        // of d.modal("hide");
-
-        /*
-         function BBDialog(elem) {
-           this.elem = elem;
-         }
-
-         BBDialog.prototype = {
-           hide: function() {
-             return this.elem.modal("hide");
-           },
-           show: function() {
-             return this.elem.modal("show");
-           }
-         };
-         */
-
-        return dialog;
-
-    };
-
-    exports.setDefaults = function() {
-        var values = {};
-
-        if(arguments.length === 2) {
-            // allow passing of single key/value...
-            values[arguments[0]] = arguments[1];
-        } else {
-            // ... and as an object too
-            values = arguments[0];
-        }
-
-        $.extend(defaults, values);
-    };
-
-    exports.hideAll = function() {
-        $(".bootbox").modal("hide");
-
-        return exports;
-    };
-
-
-    /**
-     * standard locales. Please add more according to ISO 639-1 standard. Multiple language variants are
-     * unlikely to be required. If this gets too large it can be split out into separate JS files.
-     */
-    var locales = {
-        en: {
-            OK: "OK",
-            CANCEL: "Cancel",
-            CONFIRM: "OK"
-        },
-        zh_cn: {
-            OK: "确认",
-            CANCEL: "取消",
-            CONFIRM: "确认"
-        },
-        zh_tw: {
-            OK: "確認",
-            CANCEL: "取消",
-            CONFIRM: "確認"
-        }
-    };
-
-    exports.addLocale = function(name, values) {
-        $.each(["OK", "CANCEL", "CONFIRM"], function(_, v) {
-            if(!values[v]) {
-                throw new Error("Please supply a translation for '" + v + "'");
-            }
-        });
-
-        locales[name] = {
-            OK: values.OK,
-            CANCEL: values.CANCEL,
-            CONFIRM: values.CONFIRM
-        };
-
-        return exports;
-    };
-
-    exports.removeLocale = function(name) {
-        delete locales[name];
-
-        return exports;
-    };
-
-    exports.setLocale = function(name) {
-        return exports.setDefaults("locale", name);
-    };
-
-    exports.init = function(_$) {
-        return init(_$ || $);
-    };
-
-    return exports;
-}));
-
-
-/* ========================================================================
- * ZUI: dashboard.js
- * http://zui.sexy
- * ========================================================================
- * Copyright (c) 2014 cnezsoft.com; Licensed MIT
- * ======================================================================== */
-
-
-(function($, Math) {
-    'use strict';
-
-    var Dashboard = function(element, options) {
-        this.$ = $(element);
-        this.options = this.getOptions(options);
-        this.draggable = this.$.hasClass('dashboard-draggable') || this.options.draggable;
-
-        this.init();
-    };
-
-    Dashboard.DEFAULTS = {
-        height: 360,
-        shadowType: 'normal',
-        sensitive: false,
-        circleShadowSize: 100
-    };
-
-    Dashboard.prototype.getOptions = function(options) {
-        options = $.extend({}, Dashboard.DEFAULTS, this.$.data(), options);
-        return options;
-    };
-
-    Dashboard.prototype.handleRemoveEvent = function() {
-        var afterPanelRemoved = this.options.afterPanelRemoved;
-        var tip = this.options.panelRemovingTip;
-        this.$.on('click', '.remove-panel', function() {
-            var panel = $(this).closest('.panel');
-            var name = panel.data('name') || panel.find('.panel-heading').text().replace('\n', '').replace(/(^\s*)|(\s*$)/g, '');
-            var index = panel.attr('data-id');
-
-            if(tip === undefined || confirm(tip.format(name))) {
-                panel.parent().remove();
-                if(afterPanelRemoved && $.isFunction(afterPanelRemoved)) {
-                    afterPanelRemoved(index);
-                }
-            }
-        });
-    };
-
-    Dashboard.prototype.handleRefreshEvent = function() {
-        this.$.on('click', '.refresh-panel', function() {
-            var panel = $(this).closest('.panel');
-            refreshPanel(panel);
-        });
-    };
-
-    Dashboard.prototype.handleDraggable = function() {
-        var dashboard = this.$;
-        var options = this.options;
-        var circleShadow = options.shadowType === 'circle';
-        var circleSize = options.circleShadowSize;
-        var halfCircleSize = circleSize / 2;
-        var afterOrdered = options.afterOrdered;
-
-        this.$.addClass('dashboard-draggable');
-
-        this.$.find('.panel-actions').mousedown(function(event) {
-            event.preventDefault();
-            event.stopPropagation();
-        });
-
-        var pColClass;
-        this.$.find('.panel-heading').mousedown(function(event) {
-            // console.log('--------------------------------');
-            var panel = $(this).closest('.panel');
-            var pCol = panel.parent();
-            var row = panel.closest('.row');
-            var dPanel = panel.clone().addClass('panel-dragging-shadow');
-            var pos = panel.offset();
-            var dPos = dashboard.offset();
-            var dColShadow = row.find('.dragging-col-holder');
-            var sWidth = panel.width(),
-                sHeight = panel.height(),
-                sX1, sY1, sX2, sY2, moveFn, dropCol, dropBefore, nextDropCol;
-            if(!dColShadow.length) {
-                dColShadow = $('<div class="dragging-col-holder"><div class="panel"></div></div>').removeClass('dragging-col').appendTo(row);
-            }
-
-            if(pColClass) dColShadow.removeClass(pColClass);
-            dColShadow.addClass(pColClass = pCol.attr('class'));
-
-            dColShadow.insertBefore(pCol).find('.panel').replaceWith(panel.clone().addClass('panel-dragging panel-dragging-holder'));
-
-            dashboard.addClass('dashboard-dragging');
-            panel.addClass('panel-dragging').parent().addClass('dragging-col');
-
-            dPanel.css({
-                left: pos.left - dPos.left,
-                top: pos.top - dPos.top,
-                width: sWidth,
-                height: sHeight
-            }).appendTo(dashboard).data('mouseOffset', {
-                x: event.pageX - pos.left + dPos.left,
-                y: event.pageY - pos.top + dPos.top
-            });
-
-            if(circleShadow) {
-                dPanel.addClass('circle');
-                setTimeout(function() {
-                    dPanel.css({
-                        left: event.pageX - dPos.left - halfCircleSize,
-                        top: event.pageY - dPos.top - halfCircleSize,
-                        width: circleSize,
-                        height: circleSize
-                    }).data('mouseOffset', {
-                        x: dPos.left + halfCircleSize,
-                        y: dPos.top + halfCircleSize
-                    });
-                }, 100);
-            }
-
-            $(document).bind('mousemove', mouseMove).bind('mouseup', mouseUp);
-            event.preventDefault();
-
-            function mouseMove(event) {
-                // console.log('......................');
-                var offset = dPanel.data('mouseOffset');
-                sX1 = event.pageX - offset.x;
-                sY1 = event.pageY - offset.y;
-                sX2 = sX1 + sWidth;
-                sY2 = sY1 + sHeight;
-                dPanel.css({
-                    left: sX1,
-                    top: sY1
-                });
-
-                row.find('.dragging-in').removeClass('dragging-in');
-                dropBefore = false;
-                dropCol = null;
-                var area = 0,
-                    thisArea;
-                row.children(':not(.dragging-col)').each(function() {
-                    var col = $(this);
-                    if(col.hasClass('dragging-col-holder')) {
-                        dropBefore = (!options.sensitive) || (area < 100);
-                        return true;
-                    }
-                    var p = col.children('.panel');
-                    var pP = p.offset(),
-                        pW = p.width(),
-                        pH = p.height();
-                    var pX = pP.left,
-                        pY = pP.top;
-
-                    if(options.sensitive) {
-                        pX -= dPos.left;
-                        pY -= dPos.top;
-                        thisArea = getIntersectArea(sX1, sY1, sX2, sY2, pX, pY, pX + pW, pY + pH);
-                        if(thisArea > 100 && thisArea > area && thisArea > Math.min(getRectArea(sX1, sY1, sX2, sY2), getRectArea(pX, pY, pX + pW, pY + pH)) / 3) {
-                            area = thisArea;
-                            dropCol = col;
-                        }
-                        // if(thisArea)
-                        // {
-                        //     console.log('panel ' + col.data('id'), '({0}, {1}, {2}, {3}), ({4}, {5}, {6}, {7})'.format(sX1, sY1, sX2, sY2, pX, pY, pX + pW, pY + pH));
-                        // }
-                    } else {
-                        var mX = event.pageX,
-                            mY = event.pageY;
-
-                        if(mX > pX && mY > pY && mX < (pX + pW) && mY < (pY + pH)) {
-                            // var dCol = row.find('.dragging-col');
-                            dropCol = col;
-                            return false;
-                        }
-                    }
-                });
-
-                if(dropCol) {
-                    if(moveFn) clearTimeout(moveFn);
-                    nextDropCol = dropCol;
-                    moveFn = setTimeout(movePanel, 50);
-                }
-                event.preventDefault();
-            }
-
-            function movePanel() {
-                if(nextDropCol) {
-                    nextDropCol.addClass('dragging-in');
-                    if(dropBefore) dColShadow.insertAfter(nextDropCol);
-                    else dColShadow.insertBefore(nextDropCol);
-                    dashboard.addClass('dashboard-holding');
-                    moveFn = null;
-                    nextDropCol = null;
-                }
-            }
-
-            function mouseUp(event) {
-                if(moveFn) clearTimeout(moveFn);
-
-                var oldOrder = panel.data('order');
-                panel.parent().insertAfter(dColShadow);
-                var newOrder = 0;
-                var newOrders = {};
-
-                row.children(':not(.dragging-col-holder)').each(function() {
-                    var p = $(this).children('.panel');
-                    p.data('order', ++newOrder);
-                    newOrders[p.attr('id')] = newOrder;
-                    p.parent().attr('data-order', newOrder);
-                });
-
-                if(oldOrder != newOrders[panel.attr('id')]) {
-                    row.data('orders', newOrders);
-
-                    if(afterOrdered && $.isFunction(afterOrdered)) {
-                        afterOrdered(newOrders);
-                    }
-                }
-
-                dPanel.remove();
-
-                dashboard.removeClass('dashboard-holding');
-                dashboard.find('.dragging-col').removeClass('dragging-col');
-                dashboard.find('.panel-dragging').removeClass('panel-dragging');
-                row.find('.dragging-in').removeClass('dragging-in');
-                dashboard.removeClass('dashboard-dragging');
-                $(document).unbind('mousemove', mouseMove).unbind('mouseup', mouseUp);
-                event.preventDefault();
-            }
-        });
-    };
-
-    Dashboard.prototype.handlePanelPadding = function() {
-        this.$.find('.panel-body > table, .panel-body > .list-group').closest('.panel-body').addClass('no-padding');
-    };
-
-    Dashboard.prototype.handlePanelHeight = function() {
-        var dHeight = this.options.height;
-
-        this.$.find('.row').each(function() {
-            var row = $(this);
-            var panels = row.find('.panel');
-            var height = row.data('height') || dHeight;
-
-            if(typeof height != 'number') {
-                height = 0;
-                panels.each(function() {
-                    height = Math.max(height, $(this).innerHeight());
-                });
-            }
-
-            panels.each(function() {
-                var $this = $(this);
-                $this.find('.panel-body').css('height', height - $this.find('.panel-heading').outerHeight() - 2);
-            });
-        });
-    };
-
-    function refreshPanel(panel) {
-        var url = panel.data('url');
-        if(!url) return;
-        panel.addClass('panel-loading').find('.panel-heading .icon-refresh,.panel-heading .icon-repeat').addClass('icon-spin');
-        $.ajax({
-            url: url,
-            dataType: 'html'
-        }).done(function(data) {
-            panel.find('.panel-body').html(data);
-        }).fail(function() {
-            panel.addClass('panel-error');
-        }).always(function() {
-            panel.removeClass('panel-loading');
-            panel.find('.panel-heading .icon-refresh,.panel-heading .icon-repeat').removeClass('icon-spin');
-        });
-    }
-
-    function getRectArea(x1, y1, x2, y2) {
-        return Math.abs((x2 - x1) * (y2 - y1));
-    }
-
-    function isPointInner(x, y, x1, y1, x2, y2) {
-        return x >= x1 && x <= x2 && y >= y1 && y <= y2;
-    }
-
-    function getIntersectArea(ax1, ay1, ax2, ay2, bx1, by1, bx2, by2) {
-        var x1 = Math.max(ax1, bx1),
-            y1 = Math.max(ay1, by1),
-            x2 = Math.min(ax2, bx2),
-            y2 = Math.min(ay2, by2);
-        if(isPointInner(x1, y1, ax1, ay1, ax2, ay2) && isPointInner(x2, y2, ax1, ay1, ax2, ay2) && isPointInner(x1, y1, bx1, by1, bx2, by2) && isPointInner(x2, y2, bx1, by1, bx2, by2)) {
-            return getRectArea(x1, y1, x2, y2);
-        }
-        return 0;
-    }
-
-    Dashboard.prototype.init = function() {
-        this.handlePanelHeight();
-        this.handlePanelPadding();
-        this.handleRemoveEvent();
-        this.handleRefreshEvent();
-
-        if(this.draggable) this.handleDraggable();
-
-        var orderSeed = 0;
-        this.$.find('.panel').each(function() {
-            var $this = $(this);
-            $this.data('order', ++orderSeed);
-            if(!$this.attr('id')) {
-                $this.attr('id', 'panel' + orderSeed);
-            }
-            if(!$this.attr('data-id')) {
-                $this.attr('data-id', orderSeed);
-            }
-
-            refreshPanel($this);
-        });
-    };
-
-    $.fn.dashboard = function(option) {
-        return this.each(function() {
-            var $this = $(this);
-            var data = $this.data('zui.dashboard');
-            var options = typeof option == 'object' && option;
-
-            if(!data) $this.data('zui.dashboard', (data = new Dashboard(this, options)));
-
-            if(typeof option == 'string') data[option]();
-        });
-    };
-
-    $.fn.dashboard.Constructor = Dashboard;
-}(jQuery, Math));
-
-
-/* ========================================================================
- * ZUI: boards.js
- * http://zui.sexy
- * ========================================================================
- * Copyright (c) 2014 cnezsoft.com; Licensed MIT
- * ======================================================================== */
-
-
-(function($) {
-    'use strict';
-
-    if(!$.fn.droppable) throw new Error('Droppable requires for boards');
-
-    var Boards = function(element, options) {
-        this.$ = $(element);
-        this.options = this.getOptions(options);
-
-        this.getLang();
-        this.init();
-    };
-
-    Boards.DEFAULTS = {
-        lang: 'zh-cn',
-        langs: {
-            'zh-cn': {
-                append2end: '移动到末尾'
-            },
-            'zh-tw': {
-                append2end: '移动到末尾'
-            },
-            'en': {
-                append2end: 'Move to the end.'
-            }
-        }
-    }; // default options
-
-    Boards.prototype.getOptions = function(options) {
-        options = $.extend({}, Boards.DEFAULTS, this.$.data(), options);
-        return options;
-    };
-
-    Boards.prototype.getLang = function() {
-        var config = window.config;
-        if(!this.options.lang) {
-            if(typeof(config) != 'undefined' && config.clientLang) {
-                this.options.lang = config.clientLang;
-            } else {
-                var hl = $('html').attr('lang');
-                this.options.lang = hl ? hl : 'en';
-            }
-            this.options.lang = this.options.lang.replace(/-/, '_').toLowerCase();
-        }
-        this.lang = this.options.langs[this.options.lang] || this.options.langs[Boards.DEFAULTS.lang];
-    };
-
-    Boards.prototype.init = function() {
-        var idSeed = 1;
-        var lang = this.lang;
-        this.$.find('.board-item:not(".disable-drop"), .board:not(".disable-drop")').each(function() {
-            var $this = $(this);
-            if($this.attr('id')) {
-                $this.attr('data-id', $this.attr('id'));
-            } else if(!$this.attr('data-id')) {
-                $this.attr('data-id', 'board' + (idSeed++));
-            }
-
-            if($this.hasClass('board')) {
-                $this.find('.board-list').append('<div class="board-item board-item-empty"><i class="icon-plus"></i> {append2end}</div>'.format(lang))
-                    .append('<div class="board-item board-item-shadow"></div>'.format(lang));
-            }
-        });
-
-        this.bind();
-    };
-
-    Boards.prototype.bind = function(items) {
-        var $boards = this.$,
-            setting = this.options;
-        if(typeof(items) == 'undefined') {
-            items = $boards.find('.board-item:not(".disable-drop, .board-item-shadow")');
-        }
-
-        items.droppable({
-            before: setting.before,
-            target: '.board-item:not(".disable-drop, .board-item-shadow")',
-            flex: true,
-            start: function(e) {
-                $boards.addClass('dragging').find('.board-item-shadow').height(e.element.outerHeight());
-            },
-            drag: function(e) {
-                $boards.find('.board.drop-in-empty').removeClass('drop-in-empty');
-                if(e.isIn) {
-                    var board = e.target.closest('.board').addClass('drop-in');
-                    var shadow = board.find('.board-item-shadow');
-                    var target = e.target;
-
-                    $boards.addClass('drop-in').find('.board.drop-in').not(board).removeClass('drop-in');
-
-                    shadow.insertBefore(target);
-
-                    board.toggleClass('drop-in-empty', target.hasClass('board-item-empty'));
-                }
-            },
-            drop: function(e) {
-                if(e.isNew) {
-                    var DROP = 'drop';
-                    var result;
-                    if(setting.hasOwnProperty(DROP) && $.isFunction(setting[DROP])) {
-                        result = setting[DROP](e);
-                    }
-                    if(result !== false) e.element.insertBefore(e.target);
-                }
-            },
-            finish: function() {
-                $boards.removeClass('dragging').removeClass('drop-in').find('.board.drop-in').removeClass('drop-in');
-            }
-        });
-    };
-
-    $.fn.boards = function(option) {
-        return this.each(function() {
-            var $this = $(this);
-            var data = $this.data('zui.boards');
-            var options = typeof option == 'object' && option;
-
-            if(!data) $this.data('zui.boards', (data = new Boards(this, options)));
-
-            if(typeof option == 'string') data[option]();
-        });
-    };
-
-    $.fn.boards.Constructor = Boards;
-
-    $(function() {
-        $('[data-toggle="boards"]').boards();
-    });
-}(jQuery));
-
-
 /* ========================================================================
  * ZUI: color.js
  * http://zui.sexy
  * ========================================================================
- * Copyright (c) 2014 cnezsoft.com; Licensed MIT
+ * Copyright (c) 2014-2016 cnezsoft.com; Licensed MIT
  * ======================================================================== */
 
 
-(function($, Math, window) {
+(function($, Math, window, undefined) {
     'use strict';
 
-    var hexReg = /^#([0-9a-fA-f]{3}|[0-9a-fA-f]{6})$/;
-    var namedColors = {
-        aliceblue: '#f0f8ff',
-        antiquewhite: '#faebd7',
-        aqua: '#00ffff',
-        aquamarine: '#7fffd4',
-        azure: '#f0ffff',
-        beige: '#f5f5dc',
-        bisque: '#ffe4c4',
-        black: '#000000',
-        blanchedalmond: '#ffebcd',
-        blue: '#0000ff',
-        blueviolet: '#8a2be2',
-        brown: '#a52a2a',
-        burlywood: '#deb887',
-        cadetblue: '#5f9ea0',
-        chartreuse: '#7fff00',
-        chocolate: '#d2691e',
-        coral: '#ff7f50',
-        cornflowerblue: '#6495ed',
-        cornsilk: '#fff8dc',
-        crimson: '#dc143c',
-        cyan: '#00ffff',
-        darkblue: '#00008b',
-        darkcyan: '#008b8b',
-        darkgoldenrod: '#b8860b',
-        darkgray: '#a9a9a9',
-        darkgreen: '#006400',
-        darkkhaki: '#bdb76b',
-        darkmagenta: '#8b008b',
-        darkolivegreen: '#556b2f',
-        darkorange: '#ff8c00',
-        darkorchid: '#9932cc',
-        darkred: '#8b0000',
-        darksalmon: '#e9967a',
-        darkseagreen: '#8fbc8f',
-        darkslateblue: '#483d8b',
-        darkslategray: '#2f4f4f',
-        darkturquoise: '#00ced1',
-        darkviolet: '#9400d3',
-        deeppink: '#ff1493',
-        deepskyblue: '#00bfff',
-        dimgray: '#696969',
-        dodgerblue: '#1e90ff',
-        firebrick: '#b22222',
-        floralwhite: '#fffaf0',
-        forestgreen: '#228b22',
-        fuchsia: '#ff00ff',
-        gainsboro: '#dcdcdc',
-        ghostwhite: '#f8f8ff',
-        gold: '#ffd700',
-        goldenrod: '#daa520',
-        gray: '#808080',
-        green: '#008000',
-        greenyellow: '#adff2f',
-        honeydew: '#f0fff0',
-        hotpink: '#ff69b4',
-        indianred: '#cd5c5c',
-        indigo: '#4b0082',
-        ivory: '#fffff0',
-        khaki: '#f0e68c',
-        lavender: '#e6e6fa',
-        lavenderblush: '#fff0f5',
-        lawngreen: '#7cfc00',
-        lemonchiffon: '#fffacd',
-        lightblue: '#add8e6',
-        lightcoral: '#f08080',
-        lightcyan: '#e0ffff',
-        lightgoldenrodyellow: '#fafad2',
-        lightgray: '#d3d3d3',
-        lightgreen: '#90ee90',
-        lightpink: '#ffb6c1',
-        lightsalmon: '#ffa07a',
-        lightseagreen: '#20b2aa',
-        lightskyblue: '#87cefa',
-        lightslategray: '#778899',
-        lightsteelblue: '#b0c4de',
-        lightyellow: '#ffffe0',
-        lime: '#00ff00',
-        limegreen: '#32cd32',
-        linen: '#faf0e6',
-        magenta: '#ff00ff',
-        maroon: '#800000',
-        mediumaquamarine: '#66cdaa',
-        mediumblue: '#0000cd',
-        mediumorchid: '#ba55d3',
-        mediumpurple: '#9370db',
-        mediumseagreen: '#3cb371',
-        mediumslateblue: '#7b68ee',
-        mediumspringgreen: '#00fa9a',
-        mediumturquoise: '#48d1cc',
-        mediumvioletred: '#c71585',
-        midnightblue: '#191970',
-        mintcream: '#f5fffa',
-        mistyrose: '#ffe4e1',
-        moccasin: '#ffe4b5',
-        navajowhite: '#ffdead',
-        navy: '#000080',
-        oldlace: '#fdf5e6',
-        olive: '#808000',
-        olivedrab: '#6b8e23',
-        orange: '#ffa500',
-        orangered: '#ff4500',
-        orchid: '#da70d6',
-        palegoldenrod: '#eee8aa',
-        palegreen: '#98fb98',
-        paleturquoise: '#afeeee',
-        palevioletred: '#db7093',
-        papayawhip: '#ffefd5',
-        peachpuff: '#ffdab9',
-        peru: '#cd853f',
-        pink: '#ffc0cb',
-        plum: '#dda0dd',
-        powderblue: '#b0e0e6',
-        purple: '#800080',
-        red: '#ff0000',
-        rosybrown: '#bc8f8f',
-        royalblue: '#4169e1',
-        saddlebrown: '#8b4513',
-        salmon: '#fa8072',
-        sandybrown: '#f4a460',
-        seagreen: '#2e8b57',
-        seashell: '#fff5ee',
-        sienna: '#a0522d',
-        silver: '#c0c0c0',
-        skyblue: '#87ceeb',
-        slateblue: '#6a5acd',
-        slategray: '#708090',
-        snow: '#fffafa',
-        springgreen: '#00ff7f',
-        steelblue: '#4682b4',
-        tan: '#d2b48c',
-        teal: '#008080',
-        thistle: '#d8bfd8',
-        tomato: '#ff6347',
-        turquoise: '#40e0d0',
-        violet: '#ee82ee',
-        wheat: '#f5deb3',
-        white: '#ffffff',
-        whitesmoke: '#f5f5f5',
-        yellow: '#ffff00',
-        yellowgreen: '#9acd32'
+    var hexReg = /^#([0-9a-fA-f]{3}|[0-9a-fA-f]{6})$/,
+        N255 = 255,
+        N360 = 360,
+        N100 = 100,
+        STR_STRING = 'string',
+        STR_OBJECT = 'object',
+        namedColors = {
+            aliceblue: '#f0f8ff',
+            antiquewhite: '#faebd7',
+            aqua: '#00ffff',
+            aquamarine: '#7fffd4',
+            azure: '#f0ffff',
+            beige: '#f5f5dc',
+            bisque: '#ffe4c4',
+            black: '#000000',
+            blanchedalmond: '#ffebcd',
+            blue: '#0000ff',
+            blueviolet: '#8a2be2',
+            brown: '#a52a2a',
+            burlywood: '#deb887',
+            cadetblue: '#5f9ea0',
+            chartreuse: '#7fff00',
+            chocolate: '#d2691e',
+            coral: '#ff7f50',
+            cornflowerblue: '#6495ed',
+            cornsilk: '#fff8dc',
+            crimson: '#dc143c',
+            cyan: '#00ffff',
+            darkblue: '#00008b',
+            darkcyan: '#008b8b',
+            darkgoldenrod: '#b8860b',
+            darkgray: '#a9a9a9',
+            darkgreen: '#006400',
+            darkkhaki: '#bdb76b',
+            darkmagenta: '#8b008b',
+            darkolivegreen: '#556b2f',
+            darkorange: '#ff8c00',
+            darkorchid: '#9932cc',
+            darkred: '#8b0000',
+            darksalmon: '#e9967a',
+            darkseagreen: '#8fbc8f',
+            darkslateblue: '#483d8b',
+            darkslategray: '#2f4f4f',
+            darkturquoise: '#00ced1',
+            darkviolet: '#9400d3',
+            deeppink: '#ff1493',
+            deepskyblue: '#00bfff',
+            dimgray: '#696969',
+            dodgerblue: '#1e90ff',
+            firebrick: '#b22222',
+            floralwhite: '#fffaf0',
+            forestgreen: '#228b22',
+            fuchsia: '#ff00ff',
+            gainsboro: '#dcdcdc',
+            ghostwhite: '#f8f8ff',
+            gold: '#ffd700',
+            goldenrod: '#daa520',
+            gray: '#808080',
+            green: '#008000',
+            greenyellow: '#adff2f',
+            honeydew: '#f0fff0',
+            hotpink: '#ff69b4',
+            indianred: '#cd5c5c',
+            indigo: '#4b0082',
+            ivory: '#fffff0',
+            khaki: '#f0e68c',
+            lavender: '#e6e6fa',
+            lavenderblush: '#fff0f5',
+            lawngreen: '#7cfc00',
+            lemonchiffon: '#fffacd',
+            lightblue: '#add8e6',
+            lightcoral: '#f08080',
+            lightcyan: '#e0ffff',
+            lightgoldenrodyellow: '#fafad2',
+            lightgray: '#d3d3d3',
+            lightgreen: '#90ee90',
+            lightpink: '#ffb6c1',
+            lightsalmon: '#ffa07a',
+            lightseagreen: '#20b2aa',
+            lightskyblue: '#87cefa',
+            lightslategray: '#778899',
+            lightsteelblue: '#b0c4de',
+            lightyellow: '#ffffe0',
+            lime: '#00ff00',
+            limegreen: '#32cd32',
+            linen: '#faf0e6',
+            magenta: '#ff00ff',
+            maroon: '#800000',
+            mediumaquamarine: '#66cdaa',
+            mediumblue: '#0000cd',
+            mediumorchid: '#ba55d3',
+            mediumpurple: '#9370db',
+            mediumseagreen: '#3cb371',
+            mediumslateblue: '#7b68ee',
+            mediumspringgreen: '#00fa9a',
+            mediumturquoise: '#48d1cc',
+            mediumvioletred: '#c71585',
+            midnightblue: '#191970',
+            mintcream: '#f5fffa',
+            mistyrose: '#ffe4e1',
+            moccasin: '#ffe4b5',
+            navajowhite: '#ffdead',
+            navy: '#000080',
+            oldlace: '#fdf5e6',
+            olive: '#808000',
+            olivedrab: '#6b8e23',
+            orange: '#ffa500',
+            orangered: '#ff4500',
+            orchid: '#da70d6',
+            palegoldenrod: '#eee8aa',
+            palegreen: '#98fb98',
+            paleturquoise: '#afeeee',
+            palevioletred: '#db7093',
+            papayawhip: '#ffefd5',
+            peachpuff: '#ffdab9',
+            peru: '#cd853f',
+            pink: '#ffc0cb',
+            plum: '#dda0dd',
+            powderblue: '#b0e0e6',
+            purple: '#800080',
+            red: '#ff0000',
+            rosybrown: '#bc8f8f',
+            royalblue: '#4169e1',
+            saddlebrown: '#8b4513',
+            salmon: '#fa8072',
+            sandybrown: '#f4a460',
+            seagreen: '#2e8b57',
+            seashell: '#fff5ee',
+            sienna: '#a0522d',
+            silver: '#c0c0c0',
+            skyblue: '#87ceeb',
+            slateblue: '#6a5acd',
+            slategray: '#708090',
+            snow: '#fffafa',
+            springgreen: '#00ff7f',
+            steelblue: '#4682b4',
+            tan: '#d2b48c',
+            teal: '#008080',
+            thistle: '#d8bfd8',
+            tomato: '#ff6347',
+            turquoise: '#40e0d0',
+            violet: '#ee82ee',
+            wheat: '#f5deb3',
+            white: '#ffffff',
+            whitesmoke: '#f5f5f5',
+            yellow: '#ffff00',
+            yellowgreen: '#9acd32'
+        };
+
+    var isUndefined = function(x) {
+        return x === undefined;
+    };
+
+    var isNotUndefined = function(x) {
+        return !isUndefined(x);
+    };
+
+    var convertToInt = function(x) {
+        return parseInt(x);
+    };
+
+    var convertToRgbInt = function(x) {
+        return convertToInt(clamp(number(x), N255));
     };
 
     /* color */
     var Color = function(r, g, b, a) {
-        this.r = 0;
-        this.g = 0;
-        this.b = 0;
-        this.a = 1;
+        var that = this;
+        that.r = that.g = that.b = 0;
+        that.a = 1;
 
-        if(a !== undefined) this.a = clamp(number(a), 1);
-
-        if(r !== undefined && g !== undefined && b !== undefined) {
-            this.r = parseInt(clamp(number(r), 255));
-            this.g = parseInt(clamp(number(g), 255));
-            this.b = parseInt(clamp(number(b), 255));
-        } else if(r !== undefined) {
+        if(isNotUndefined(a)) that.a = clamp(number(a), 1);
+        if(isNotUndefined(r) && isNotUndefined(g) && isNotUndefined(b)) {
+            that.r = convertToRgbInt(r);
+            that.g = convertToRgbInt(g);
+            that.b = convertToRgbInt(b);
+        } else if(isNotUndefined(r)) {
             var type = typeof(r);
-            if(type == 'string') {
+            if(type == STR_STRING) {
                 r = r.toLowerCase();
                 if(r === 'transparent') {
-                    this.a = 0;
+                    that.a = 0;
                 } else if(namedColors[r]) {
                     this.rgb(hexToRgb(namedColors[r]));
                 } else {
-                    this.rgb(hexToRgb(r));
+                    that.rgb(hexToRgb(r));
                 }
-            } else if(type == 'number' && g === undefined) {
-                this.r = parseInt(clamp(r, 255));
-                this.g = this.r;
-                this.b = this.r;
-            } else if(type == 'object' && r.hasOwnProperty('r')) {
-                this.r = parseInt(clamp(number(r.r), 255));
-                if(r.hasOwnProperty('g')) this.g = parseInt(clamp(number(r.g), 255));
-                if(r.hasOwnProperty('b')) this.b = parseInt(clamp(number(r.b), 255));
-                if(r.hasOwnProperty('a')) this.a = clamp(number(r.a), 1);
-            } else if(type == 'object' && r.hasOwnProperty('h')) {
+            } else if(type == 'number' && isUndefined(g)) {
+                that.r = that.g = that.b = convertToRgbInt(r);
+            } else if(type == STR_OBJECT && isNotUndefined(r.r)) {
+                that.r = convertToRgbInt(r.r);
+                if(isNotUndefined(r.g)) that.g = convertToRgbInt(r.g);
+                if(isNotUndefined(r.b)) that.b = convertToRgbInt(r.b);
+                if(isNotUndefined(r.a)) that.a = clamp(number(r.a), 1);
+            } else if(type == STR_OBJECT && isNotUndefined(r.h)) {
                 var hsl = {
-                    h: clamp(number(r.h), 360),
+                    h: clamp(number(r.h), N360),
                     s: 1,
                     l: 1,
                     a: 1
                 };
-                if(r.hasOwnProperty('s')) hsl.s = clamp(number(r.s), 1);
-                if(r.hasOwnProperty('l')) hsl.l = clamp(number(r.l), 1);
-                if(r.hasOwnProperty('a')) hsl.a = clamp(number(r.a), 1);
+                if(isNotUndefined(r.s)) hsl.s = clamp(number(r.s), 1);
+                if(isNotUndefined(r.l)) hsl.l = clamp(number(r.l), 1);
+                if(isNotUndefined(r.a)) hsl.a = clamp(number(r.a), 1);
 
-                this.rgb(hslToRgb(hsl));
+                that.rgb(hslToRgb(hsl));
             }
         }
     };
 
     Color.prototype.rgb = function(rgb) {
-        if(rgb !== undefined) {
-            if(typeof(rgb) == 'object') {
-                if(rgb.hasOwnProperty('r')) this.r = parseInt(clamp(number(rgb.r), 255));
-                if(rgb.hasOwnProperty('g')) this.g = parseInt(clamp(number(rgb.g), 255));
-                if(rgb.hasOwnProperty('b')) this.b = parseInt(clamp(number(rgb.b), 255));
-                if(rgb.hasOwnProperty('a')) this.a = clamp(number(rgb.a), 1);
+        var that = this;
+        if(isNotUndefined(rgb)) {
+            if(typeof(rgb) == STR_OBJECT) {
+                if(isNotUndefined(rgb.r)) that.r = convertToRgbInt(rgb.r);
+                if(isNotUndefined(rgb.g)) that.g = convertToRgbInt(rgb.g);
+                if(isNotUndefined(rgb.b)) that.b = convertToRgbInt(rgb.b);
+                if(isNotUndefined(rgb.a)) that.a = clamp(number(rgb.a), 1);
             } else {
-                var v = parseInt(number(rgb));
-                this.r = v;
-                this.g = v;
-                this.b = v;
+                var v = convertToInt(number(rgb));
+                that.r = v;
+                that.g = v;
+                that.b = v;
             }
-            return this;
+            return that;
         } else return {
-            r: this.r,
-            g: this.g,
-            b: this.b,
-            a: this.a
+            r: that.r,
+            g: that.g,
+            b: that.b,
+            a: that.a
         };
     };
 
     Color.prototype.hue = function(hue) {
-        var hsl = this.toHsl();
+        var that = this;
+        var hsl = that.toHsl();
 
-        if(hue === undefined) return hsl.h;
+        if(isUndefined(hue)) return hsl.h;
         else {
-            hsl.h = clamp(number(hue), 360);
-            this.rgb(hslToRgb(hsl));
-
-            return this;
+            hsl.h = clamp(number(hue), N360);
+            that.rgb(hslToRgb(hsl));
+            return that;
         }
     };
 
     Color.prototype.darken = function(amount) {
-        var hsl = this.toHsl();
+        var that = this;
+        var hsl = that.toHsl();
 
-        hsl.l -= amount / 100;
+        hsl.l -= amount / N100;
         hsl.l = clamp(hsl.l, 1);
 
-        this.rgb(hslToRgb(hsl));
-        return this;
+        that.rgb(hslToRgb(hsl));
+        return that;
     };
 
     Color.prototype.clone = function() {
-        return new Color(this.r, this.g, this.b, this.a);
+        var that = this;
+        return new Color(that.r, that.g, that.b, that.a);
     };
 
     Color.prototype.lighten = function(amount) {
@@ -6105,26 +4862,25 @@
     };
 
     Color.prototype.fade = function(amount) {
-        this.a = clamp(amount / 100, 1);
+        this.a = clamp(amount / N100, 1);
 
         return this;
     };
 
     Color.prototype.spin = function(amount) {
         var hsl = this.toHsl();
-        var hue = (hsl.h + amount) % 360;
+        var hue = (hsl.h + amount) % N360;
 
-        hsl.h = hue < 0 ? 360 + hue : hue;
-        this.rgb(hslToRgb(hsl));
-
-        return this;
+        hsl.h = hue < 0 ? N360 + hue : hue;
+        return this.rgb(hslToRgb(hsl));
     };
 
     Color.prototype.toHsl = function() {
-        var r = this.r / 255,
-            g = this.g / 255,
-            b = this.b / 255,
-            a = this.a;
+        var that = this;
+        var r = that.r / N255,
+            g = that.g / N255,
+            b = that.b / N255,
+            a = that.a;
 
         var max = Math.max(r, g, b),
             min = Math.min(r, g, b);
@@ -6150,7 +4906,7 @@
             h /= 6;
         }
         return {
-            h: h * 360,
+            h: h * N360,
             s: s,
             l: l,
             a: a
@@ -6158,9 +4914,9 @@
     };
 
     Color.prototype.luma = function() {
-        var r = this.r / 255,
-            g = this.g / 255,
-            b = this.b / 255;
+        var r = this.r / N255,
+            g = this.g / N255,
+            b = this.b / N255;
 
         r = (r <= 0.03928) ? r / 12.92 : Math.pow(((r + 0.055) / 1.055), 2.4);
         g = (g <= 0.03928) ? g / 12.92 : Math.pow(((g + 0.055) / 1.055), 2.4);
@@ -6172,12 +4928,10 @@
     Color.prototype.saturate = function(amount) {
         var hsl = this.toHsl();
 
-        hsl.s += amount / 100;
+        hsl.s += amount / N100;
         hsl.s = clamp(hsl.s);
 
-        this.rgb(hslToRgb(hsl));
-
-        return this;
+        return this.rgb(hslToRgb(hsl));
     };
 
     Color.prototype.desaturate = function(amount) {
@@ -6185,21 +4939,21 @@
     };
 
     Color.prototype.contrast = function(dark, light, threshold) {
-        if(typeof light === 'undefined') light = new Color(255, 255, 255, 1);
+        if(isUndefined(light)) light = new Color(N255, N255, N255, 1);
         else light = new Color(light);
-        if(typeof dark === 'undefined') dark = new Color(0, 0, 0, 1);
+        if(isUndefined(dark)) dark = new Color(0, 0, 0, 1);
         else dark = new Color(dark);
-
-        if(this.a < 0.5) return dark;
-
-        if(threshold === undefined) threshold = 0.43;
-        else threshold = number(threshold);
 
         if(dark.luma() > light.luma()) {
             var t = light;
             light = dark;
             dark = t;
         }
+        
+        if(this.a < 0.5) return dark;
+
+        if(isUndefined(threshold)) threshold = 0.43;
+        else threshold = number(threshold);
 
         if(this.luma() < threshold) {
             return light;
@@ -6220,18 +4974,20 @@
     };
 
     Color.prototype.toCssStr = function() {
-        if(this.a > 0) {
-            if(this.a < 1) {
-                return 'rgba(' + this.r + ',' + this.g + ',' + this.b + ',' + this.a + ')';
+        var that = this;
+        if(that.a > 0) {
+            if(that.a < 1) {
+                return 'rgba(' + that.r + ',' + that.g + ',' + that.b + ',' + that.a + ')';
             } else {
-                return this.hexStr();
+                return that.hexStr();
             }
         } else {
             return 'transparent';
         }
     };
 
-    Color.prototype.isColor = isColor;
+    Color.isColor = isColor;
+    Color.names = namedColors;
 
     /* helpers */
     function hexToRgb(hex) {
@@ -6248,7 +5004,7 @@
 
             var hexChange = [];
             for(i = 1; i < 7; i += 2) {
-                hexChange.push(parseInt('0x' + hex.slice(i, i + 2)));
+                hexChange.push(convertToInt('0x' + hex.slice(i, i + 2)));
             }
             return {
                 r: hexChange[0],
@@ -6257,12 +5013,12 @@
                 a: 1
             };
         } else {
-            throw new Error('function hexToRgb: Wrong hex string! (hex: ' + hex + ')');
+            throw new Error('Wrong hex string! (hex: ' + hex + ')');
         }
     }
 
     function isColor(hex) {
-        return typeof(hex) === 'string' && (hex.toLowerCase() === 'transparent' || namedColors[hex.toLowerCase()] || hexReg.test($.trim(hex.toLowerCase())));
+        return typeof(hex) === STR_STRING && (hex.toLowerCase() === 'transparent' || namedColors[hex.toLowerCase()] || hexReg.test($.trim(hex.toLowerCase())));
     }
 
     function hslToRgb(hsl) {
@@ -6271,7 +5027,7 @@
             l = hsl.l,
             a = hsl.a;
 
-        h = (number(h) % 360) / 360;
+        h = (number(h) % N360) / N360;
         s = clamp(number(s));
         l = clamp(number(l));
         a = clamp(number(a));
@@ -6280,9 +5036,9 @@
         var m1 = l * 2 - m2;
 
         var r = {
-            r: hue(h + 1 / 3) * 255,
-            g: hue(h) * 255,
-            b: hue(h - 1 / 3) * 255,
+            r: hue(h + 1 / 3) * N255,
+            g: hue(h) * N255,
+            b: hue(h - 1 / 3) * N255,
             a: a
         };
 
@@ -6303,8 +5059,8 @@
     }
 
     function fit(n, end, start) {
-        if(start === undefined) start = 0;
-        if(end === undefined) end = 255;
+        if(isUndefined(start)) start = 0;
+        if(isUndefined(end)) end = N255;
 
         return Math.min(Math.max(n, start), end);
     }
@@ -6322,14 +5078,13 @@
         Color: Color
     });
 
-}(jQuery, Math, window));
-
+}(jQuery, Math, window, undefined));
 
 /* ========================================================================
- * ZUI: tree.js
+ * ZUI: tree.js [1.4.0+]
  * http://zui.sexy
  * ========================================================================
- * Copyright (c) 2014 cnezsoft.com; Licensed MIT
+ * Copyright (c) 2016 cnezsoft.com; Licensed MIT
  * ======================================================================== */
 
 
@@ -6337,6 +5092,7 @@
     'use strict';
 
     var name = 'zui.tree'; // modal name
+    var globalId = 0;
 
     // The tree modal class
     var Tree = function(element, options) {
@@ -6344,37 +5100,274 @@
         this.$ = $(element);
 
         this.getOptions(options);
-        this.init();
+        this._init();
     };
+
+    var DETAULT_ACTIONS = {
+        sort: {
+            template: '<a class="sort-handler" href="javascript:;"><i class="icon icon-move"></i></a>'
+        },
+        add: {
+            template: '<a href="javascript:;"><i class="icon icon-plus"></i></a>'
+        },
+        edit: {
+            template: '<a href="javascript:;"><i class="icon icon-pencil"></i></a>'
+        },
+        "delete": {
+            template: '<a href="javascript:;"><i class="icon icon-trash"></i></a>'
+        }
+    };
+
+    function formatActions(actions, parentActions) {
+        if(actions === false) return actions;
+        if(!actions) return parentActions;
+
+        if(actions === true) {
+            actions = {add: true, "delete": true, edit: true, sort: true};
+        } else if(typeof actions === 'string') {
+            actions = actions.split(',');
+        }
+        var _actions;
+        if($.isArray(actions)) {
+            _actions = {};
+            $.each(actions, function(idx, action) {
+                if($.isPlainObject(action)) {
+                    _actions[action.action] = action;
+                } else {
+                    _actions[action] = true;
+                }
+            });
+            actions = _actions;
+        }
+        if($.isPlainObject(actions)) {
+            _actions = {};
+            $.each(actions, function(name, action) {
+                if(action) {
+                    _actions[name] = $.extend({type: name}, DETAULT_ACTIONS[name], $.isPlainObject(action) ? action : null);
+                } else {
+                    _actions[name] = false;
+                }
+            });
+            actions = _actions;
+        }
+        return parentActions ? $.extend(true, {}, parentActions, actions) : actions;
+    }
+
+    function createActionEle(action, name, template) {
+        name = name || action.type;
+        return $(template || action.template).addClass('tree-action').attr($.extend({'data-type': name, title: action.title || ''}, action.attr)).data('action', action);
+    }
 
     // default options
     Tree.DEFAULTS = {
         animate: null,
-        initialState: 'normal'
+        initialState: 'normal', // 'normal' | 'preserve' | 'expand' | 'collapse',
+        toggleTemplate: '<i class="list-toggle icon"></i>',
+        // sortable: false, //
     };
 
-    Tree.prototype.init = function() {
-        if(this.options.animate) this.$.addClass('tree-animate');
+    Tree.prototype.add = function(rootEle, items, expand, disabledAnimate, notStore) {
+        var $e = $(rootEle), $ul, options = this.options;
+        if($e.is('li')) {
+            $ul = $e.children('ul');
+            if(!$ul.length) {
+                $ul = $('<ul/>');
+                $e.append($ul);
+                this._initList($ul, $e);
+            }
+        } else {
+            $ul = $e;
+        }
 
-        this.$lists = this.$.find('ul');
-        this.$lists.parent('li').addClass('has-list').prepend('<i class="list-toggle icon"></i>');
-
-        var that = this;
-        this.$.on('click', '.list-toggle, a[href=#]', function(e) {
-            that.toggle($(this).parent('li'));
-            e.preventDefault();
-        });
-
-        if(this.options.initialState === 'expand') {
-            this.expand();
-        } else if(this.options.initialState === 'collapse') {
-            this.collapse();
-        } else if(this.options.animate) {
-            this.$.find('li.has-list.open').addClass('in');
+        if($ul) {
+            var that = this;
+            if(!$.isArray(items)) {
+                items = [items];
+            }
+            $.each(items, function(idx, item) {
+                var $li = $('<li/>').data(item).appendTo($ul);
+                if(item.id !== undefined) $li.attr('data-id', item.id);
+                var $wrapper = options.itemWrapper ? $(options.itemWrapper === true ? '<div class="tree-item-wrapper"/>' : options.itemWrapper).appendTo($li) : $li;
+                if(item.html) {
+                    $wrapper.html(item.html)
+                } else if($.isFunction(that.options.itemCreator)) {
+                    var itemContent = that.options.itemCreator($li, item);
+                    if(itemContent !== true && itemContent !== false) $wrapper.html(itemContent);
+                } else if(item.url) {
+                    $wrapper.append($('<a/>', {href: item.url}).text(item.title || item.name));
+                } else {
+                    $wrapper.append($('<span/>').text(item.title || item.name));
+                }
+                that._initItem($li, item.idx || idx, $ul, item);
+                if(item.children && item.children.length) {
+                    that.add($li, item.children);
+                }
+            });
+            this._initList($ul);
+            if(expand && !$ul.hasClass('tree')) {
+                that.expand($ul.parent('li'), disabledAnimate, notStore);
+            }
         }
     };
 
-    Tree.prototype.expand = function($li, disabledAnimate) {
+    Tree.prototype.reload = function(data) {
+        var that = this;
+
+        if(data) {
+            that.$.empty();
+            that.add(that.$, data);
+        }
+
+        if(that.isPreserve)
+        {
+            if(that.store.time) {
+                that.$.find('li:not(.tree-action-item)').each(function() {
+                    var $li= $(this);
+                    that[that.store[$li.data('id')] ? 'expand' : 'collapse']($li, true, true);
+                });
+            }
+        }
+    };
+
+    Tree.prototype._initList = function($list, $parentItem, idx, data) {
+        var that = this;
+        if(!$list.hasClass('tree')) {
+            $parentItem = ($parentItem || $list.closest('li')).addClass('has-list');
+            if(!$parentItem.find('.list-toggle').length) {
+                $parentItem.prepend(this.options.toggleTemplate);
+            }
+            idx = idx || $parentItem.data('idx');
+        } else {
+            idx = 0;
+            $parentItem = null;
+        }
+        $list.attr('data-idx', idx || 0).children('li:not(.tree-action-item)').each(function(index) {
+            that._initItem($(this), index + 1, $list);
+        });
+        data = data || ($parentItem ? $parentItem.data() : null);
+        var actions = formatActions(data ? data.actions : null, this.actions);
+        if(actions) {
+            if(actions.add && actions.add.templateInList !== false) {
+                var $actionItem = $list.children('li.tree-action-item');
+                if(!$actionItem.length) {
+                    $('<li class="tree-action-item"/>').append(createActionEle(actions.add, 'add', actions.add.templateInList)).appendTo($list);
+                } else {
+                    $actionItem.detach().appendTo($list);
+                }
+            }
+            if(actions.sort) {
+                $list.sortable($.extend({
+                    dragCssClass: 'tree-drag-holder', 
+                    trigger: '.sort-handler', 
+                    selector: 'li:not(.tree-action-item)',
+                    finish: function(e) {
+                        that.callEvent('action', {action: actions.sort, $list: $list, target: e.target, item: data});
+                    }
+                }, actions.sort.options, $.isPlainObject(this.options.sortable) ? this.options.sortable : null));
+            }
+        }
+        if($parentItem && ($parentItem.hasClass('open') || (data && data.open))) {
+            $parentItem.addClass('open in');
+        }
+    };
+
+    Tree.prototype._initItem = function($item, idx, $parentList, data) {
+        if(idx === undefined) {
+            var $pre = $item.prev('li');
+            idx = $pre.length ? ($pre.data('idx') + 1) : 1;
+        }
+        $parentList = $parentList || $item.closest('ul');
+        $item.attr('data-idx', idx);
+        if(!$item.data('id')) {
+            var id = idx;
+            if(!$parentList.hasClass('tree')) {
+                id = $parentList.parent('li').data('id') + '-' + id;
+            }
+            $item.attr('data-id', id);
+        }
+        data = data || $item.data();
+        var actions = formatActions(data.actions, this.actions);
+        if(actions) {
+            var $actions = $item.find('.tree-actions');
+            if(!$actions.length) {
+                $actions = $('<div class="tree-actions"/>').appendTo(this.options.itemWrapper ? $item.find('.tree-item-wrapper') : $item);
+                $.each(actions, function(actionName, action) {
+                    if(action) $actions.append(createActionEle(action, actionName));
+                });
+            }
+        }
+
+        var $children = $item.children('ul');
+        if($children.length) {
+            this._initList($children, $item, idx, data);
+        }
+    };
+
+    Tree.prototype._init = function() {
+        var options = this.options, that = this;
+        this.actions = formatActions(options.actions);
+
+        this.$.addClass('tree');
+        if(options.animate) this.$.addClass('tree-animate');
+
+        this._initList(this.$);
+
+        var initialState = options.initialState;
+        var isPreserveEnable = $.zui && $.zui.store && $.zui.store.enable;
+        if(isPreserveEnable) {
+            this.selector = name + '::' + (options.name || '') + '#' + (this.$.attr('id') || globalId++);
+            this.store = $.zui.store[options.name ? 'get' : 'pageGet'](this.selector, {});
+        }
+        if(initialState === 'preserve') {
+            if(isPreserveEnable) this.isPreserve = true;
+            else this.options.initialState = initialState = 'normal';
+        }
+
+        // init data
+        this.reload(options.data);
+        if(isPreserveEnable) this.isPreserve = true;
+
+        if(initialState === 'expand') {
+            this.expand();
+        } else if(initialState === 'collapse') {
+            this.collapse();
+        }
+
+        // Bind event
+        this.$.on('click', '.list-toggle,a[href="#"],.tree-toggle', function(e) {
+            var $li = $(this).parent('li');
+            that.callEvent('hit', {target: $li, item: $li.data()});
+            that.toggle($li);
+            e.preventDefault();
+        }).on('click', '.tree-action', function() {
+            var $action = $(this);
+            var action = $action.data();
+            if(action.action) action = action.action;
+            if(action.type === 'sort') return;
+            var $li = $action.closest('li:not(.tree-action-item)');
+            that.callEvent('action', {action: action, target: this, $item: $li, item: $li.data()});
+        });
+    };
+
+    Tree.prototype.preserve = function($li, id, expand) {
+        if(!this.isPreserve) return;
+        if($li) {
+            id = id || $li.data('id');
+            expand = expand === undefined ? $li.hasClass('open') : false;
+            if(expand) this.store[id] = expand;
+            else delete this.store[id];
+            this.store.time = new Date().getTime();
+            $.zui.store[this.options.name ? 'set' : 'pageSet'](this.selector, this.store);
+        } else {
+            var that = this;
+            this.store = {};
+            this.$.find('li').each(function() {
+                that.preserve($(this));
+            });
+        }
+    };
+
+    Tree.prototype.expand = function($li, disabledAnimate, notStore) {
         if($li) {
             $li.addClass('open');
             if(!disabledAnimate && this.options.animate) {
@@ -6385,12 +5378,33 @@
                 $li.addClass('in');
             }
         } else {
-            this.$.find('li.has-list').addClass('open in');
+            $li = this.$.find('li.has-list').addClass('open in');
         }
+        if(!notStore) this.preserve($li);
         this.callEvent('expand', $li, this);
     };
 
-    Tree.prototype.collapse = function($li, disabledAnimate) {
+    Tree.prototype.show = function($lis, disabledAnimate, notStore) {
+        var that = this;
+        $lis.each(function() {
+            var $li = $(this);
+            that.expand($li, disabledAnimate, notStore);
+            if($li) {
+                var $ul = $li.parent('ul');
+                while($ul && $ul.length && !$ul.hasClass('tree')) {
+                    var $parentLi = $ul.parent('li');
+                    if($parentLi.length) {
+                        that.expand($parentLi, disabledAnimate, notStore);
+                        $ul = $parentLi.parent('ul');
+                    } else {
+                        $ul = false;
+                    }
+                }
+            }
+        });
+    };
+
+    Tree.prototype.collapse = function($li, disabledAnimate, notStore) {
         if($li) {
             if(!disabledAnimate && this.options.animate) {
                 $li.removeClass('in');
@@ -6401,8 +5415,9 @@
                 $li.removeClass('open in');
             }
         } else {
-            this.$.find('li.has-list').removeClass('open in');
+            $li = this.$.find('li.has-list').removeClass('open in');
         }
+        if(!notStore) this.preserve($li);
         this.callEvent('collapse', $li, this);
     };
 
@@ -6419,10 +5434,31 @@
         }
     };
 
+    Tree.prototype.toData = function($ul, filter) {
+        if($.isFunction($ul)) {
+            filter = $ul;
+            $ul = null;
+        }
+        $ul = $ul || this.$;
+        var that = this;
+        return $ul.children('li:not(.tree-action-item)').map(function() {
+            var $li = $(this);
+            var data = $li.data();
+            delete data['zui.droppable'];
+            var $children = $li.children('ul');
+            if($children.length) data.children = that.toData($children);
+            return $.isFunction(filter) ? filter(data, $li) : data;
+        }).get();
+    };
+
     // Call event helper
     Tree.prototype.callEvent = function(name, params) {
-        var result = this.$.callEvent(name + '.' + this.name, params, this);
-        return !(result.result !== undefined && (!result.result));
+        var result;
+        if($.isFunction(this.options[name])) {
+            result = this.options[name](params, this);
+        }
+        this.$.trigger($.Event(name + '.' + this.name, params));
+        return result;
     };
 
     // Extense jquery element

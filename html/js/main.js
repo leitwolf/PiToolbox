@@ -2,8 +2,8 @@
 function init() {
     theme_init();
     FilesTable.init();
-    var sidebar = Sidebar.createNew();
-    C.registerModule("sidebar", sidebar);
+    var nav = Nav.createNew();
+    C.registerModule("nav", nav);
     var net = Net.createNew();
     C.registerModule("net", net);
     var aria2 = Aria2.createNew();
@@ -17,15 +17,15 @@ function init() {
 
     var q = document.location.search;
     if (q == "?xunlei") {
-        sidebar.loadItem("xunlei");
+        nav.loadItem("xunlei");
     }
-    else if (q == "?yun360") {
-        sidebar.loadItem("yun360");
-    }
+    // else if (q == "?yun360") {
+    //     nav.loadItem("yun360");
+    // }
     else if (q == "?xuanfeng") {
-        sidebar.loadItem("xuanfeng");
+        nav.loadItem("xuanfeng");
     }
     else {
-        sidebar.loadItem("aria2");
+        nav.loadItem("aria2");
     }
 }
