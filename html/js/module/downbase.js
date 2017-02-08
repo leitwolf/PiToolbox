@@ -271,10 +271,9 @@ var downbase_template = multiline(function () {/*
         <input id="cookie_file" type="file">
     </div>
 </h1>
-<hr/>
 <ul id="accountList" class="nav nav-secondary hidden" style="padding-bottom:10px;">
 </ul>
-<div style="padding-bottom:4px;">
+<div id="op_bar" style="padding-bottom:4px;">
     <a id="download" class="btn btn-primary hidden" href="javascript:C.getModule('{{className}}').download();" role="button">下载</a>
     &nbsp;&nbsp;&nbsp;
     <a id="refresh" class="btn btn-primary hidden" href="javascript:C.getModule('{{className}}').refresh();" role="button"><i class="icon-refresh"></i> 刷新</a>
@@ -282,5 +281,7 @@ var downbase_template = multiline(function () {/*
 </div>
 <ol id="nav" class="breadcrumb hidden" style="margin-bottom:1px;padding:5px;">
 </ol>
-{{table}}
+<div class="table-responsive">
+    {{table}}
+</div>
 */});

@@ -332,7 +332,6 @@ var aria2_mainTemplate = multiline(function () {/*
 &nbsp;&nbsp;&nbsp;<small id="version"></small>
 &nbsp;&nbsp;&nbsp;<small id="speed"></small>
 </h1>
-<hr>
 <div class="panel panel-primary">
     <div class="panel-heading">进行中的任务</div>
     <div class="panel-body">

@@ -35,6 +35,13 @@ var Nav = {
                 page.toggleActivate();
                 self.curPage = page;
             }
+            // 下载界面钉住下载，刷新按钮
+            // if (name != "aria2") {
+            //     setTimeout(function() {
+            //         $("#op_bar").stickUp({marginTop: '40px'});
+            //         console.log("pin");
+            //     }, 500);
+            // }
         }
 
         return self;

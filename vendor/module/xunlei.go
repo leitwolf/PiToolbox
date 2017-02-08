@@ -44,7 +44,7 @@ func (xl *Xunlei) LoadData(sender *Sender, data interface{}) {
 		sender.Data = map[string]interface{}{"account": accountName, "id": id, "list": resultList}
 	} else {
 		// 获取bt
-		resultList, err := xl.getBt(cc, id)
+		resultList, err := xl.getBtList(cc, id)
 		if err != nil {
 			sender.Err = err.Error() + " | xunlei:47"
 			return
@@ -169,11 +169,31 @@ func (xl *Xunlei) getMainList(cc *lib.CookieContainer) (resultList []interface{}
 
 // getBt 获取bt列表
 // @return 返回 [{id,title,size,url,isdir}]，url为空则是bt文件夹
-func (xl *Xunlei) getBt(cc *lib.CookieContainer, taskID string) (resultList []interface{}, err error) {
+func (xl *Xunlei) getBtList(cc *lib.CookieContainer, taskID string) (resultList []interface{}, err error) {
+	// 取第一页的
+	resultList, pageNum, err := xl.getBt(cc, taskID, 1)
+	if err != nil {
+		return
+	}
+	// println("page num", pageNum)
+	if pageNum > 1 {
+		for i := 2; i <= pageNum; i++ {
+			rl, _, err1 := xl.getBt(cc, taskID, i)
+			if err1 == nil {
+				resultList = append(resultList, rl...)
+			}
+		}
+	}
+	return
+}
+
+// getBt 获取bt列表一个页面的信息
+// @return 返回 [{id,title,size,url,isdir}]，url为空则是bt文件夹
+func (xl *Xunlei) getBt(cc *lib.CookieContainer, taskID string, page int) (resultList []interface{}, pageNum int, err error) {
 	// 请求页面数据
 	userid := cc.GetValueByName("userid")
 	callback := "fill_bt_list"
-	urlStr := "http://dynamic.cloud.vip.xunlei.com/interface/fill_bt_list?tid=" + taskID + "&g_net=1&p=1&uid=" + userid + "&callback=" + callback
+	urlStr := "http://dynamic.cloud.vip.xunlei.com/interface/fill_bt_list?tid=" + taskID + "&g_net=1&p=" + strconv.Itoa(page) + "&uid=" + userid + "&callback=" + callback
 	res, err := lib.GetHTML(urlStr, cc)
 	if err != nil {
 		return
@@ -201,6 +221,12 @@ func (xl *Xunlei) getBt(cc *lib.CookieContainer, taskID string) (resultList []in
 		err = errors.New("bad response data['Result']['Record']")
 		return
 	}
+	// 总数及每页数量，得出总页数
+	num, _ := strconv.Atoi(result["btnum"].(string))
+	perNum := int(result["btpernum"].(float64))
+	pageNum = (num-1)/perNum + 1
+	// println(urlStr)
+	// println("2 page num", num, perNum, pageNum, page, len(list))
 	resultList = []interface{}{}
 	for i := 0; i < len(list); i++ {
 		obj, ok := list[i].(map[string]interface{})
