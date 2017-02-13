@@ -27,3 +27,4 @@ PiToolbox
 test/*
 html/test/*
 config/*
+vendor/github.com/*

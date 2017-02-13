@@ -1,0 +1,13 @@
+{
+    "memo": "7a19705743cb3f4447b6ba45b732c30ba56b4ea1aa89f328add58b2f138e9301",
+    "projects": [
+        {
+            "name": "github.com/VividCortex/godaemon",
+            "branch": "master",
+            "revision": "3d9f6e0b234fe7d17448b345b2e14ac05814a758",
+            "packages": [
+                "."
+            ]
+        }
+    ]
+}
